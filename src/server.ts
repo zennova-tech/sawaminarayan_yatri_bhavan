@@ -9,6 +9,8 @@ import { sequelize } from "./sequilizedir/models";
 
 const app: Express = express();
 const port = PORT ?? 3000;
+
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
