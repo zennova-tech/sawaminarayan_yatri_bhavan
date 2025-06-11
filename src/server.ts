@@ -5,11 +5,11 @@ import http from "http";
 import { Server } from "socket.io";
 import { PORT } from "@config";
 import router from "./routes";
+import passport from "passport";
 import { sequelize } from "./sequilizedir/models";
 
 const app: Express = express();
 const port = PORT ?? 3000;
-
 
 app.use(bodyParser.json());
 app.use(
@@ -26,6 +26,8 @@ export const io = new Server(server, {
   },
 });
 app.use("/", router);
+app.use(passport.initialize());
+
 const connectWithRetry = async () => {
   try {
     await sequelize.authenticate();

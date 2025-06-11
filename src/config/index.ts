@@ -6,4 +6,5 @@ export const {
   RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET,
   RAZORPAY_WEBHOOK_SECRET,
+  SECRET_KEY,
 } = process.env;

@@ -1,8 +1,12 @@
-import razorpayInstance from "@/razorpay/razorpay.service";
-import { generalResponse } from "@/utils/generalResponse";
-import { Request, Response } from "express";
-import crypto from "crypto";
-import { RAZORPAY_WEBHOOK_SECRET } from "@/config";
+import { Transaction } from 'sequelize';
+import razorpayInstance from '@/razorpay/razorpay.service';
+import { generalResponse } from '@/utils/generalResponse';
+import { Request, Response } from 'express';
+import crypto from 'crypto';
+import { RAZORPAY_WEBHOOK_SECRET } from '@/config';
+import { hotelDetails } from '@/repository/booking.repository';
+import Booking from '@/sequilizedir/models/booking.model';
+import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 
 type OrderCreateRequestBody = {
   amount: number;
@@ -41,7 +45,7 @@ const createBookingHandler = async (req: Request, res: Response) => {
       req,
       res,
       { data: data },
-      "booking create sucessfully",
+      'booking create sucessfully',
       false
     );
   } catch (error) {
@@ -53,44 +57,44 @@ const razorpayWebhook = async (req: Request, res: Response) => {
   try {
     const secret = RAZORPAY_WEBHOOK_SECRET;
     if (!secret) {
-      console.error("RAZORPAY_WEBHOOK_SECRET is not configured");
+      console.error('RAZORPAY_WEBHOOK_SECRET is not configured');
       return generalResponse(
         req,
         res,
         null,
-        "Webhook secret not configured",
+        'Webhook secret not configured',
         false,
-        "error",
+        'error',
         500
       );
     }
 
-    const receivedSignature = req.headers["x-razorpay-signature"] as string;
+    const receivedSignature = req.headers['x-razorpay-signature'] as string;
     if (!receivedSignature) {
       return generalResponse(
         req,
         res,
         null,
-        "No signature received",
+        'No signature received',
         false,
-        "error",
+        'error',
         400
       );
     }
 
     const generatedSignature = crypto
-      .createHmac("sha256", secret)
+      .createHmac('sha256', secret)
       .update(JSON.stringify(req.body))
-      .digest("hex");
+      .digest('hex');
 
     if (generatedSignature !== receivedSignature) {
       return generalResponse(
         req,
         res,
         null,
-        "Invalid webhook signature",
+        'Invalid webhook signature',
         false,
-        "error",
+        'error',
         400
       );
     }
@@ -98,45 +102,105 @@ const razorpayWebhook = async (req: Request, res: Response) => {
     const event = req.body.event;
     const payload = req.body.payload;
 
-    if (event === "payment.captured") {
+    if (event === 'payment.captured') {
       const payment = payload.payment.entity;
       const notes = payment.notes || {};
 
       try {
         // Your booking creation logic here
+        await BookingRooms(payment, req.transaction);
         return generalResponse(
           req,
           res,
           { paymentId: payment.id },
-          "Payment processed successfully",
+          'Payment processed successfully',
           false
         );
       } catch (err) {
-        console.error("DB Insert Failed", err);
+        console.error('DB Insert Failed', err);
         return generalResponse(
           req,
           res,
           null,
-          "Booking creation failed",
+          'Booking creation failed',
           false,
-          "error",
+          'error',
           500
         );
       }
     }
-    return generalResponse(req, res, null, "Webhook received", false);
+    return generalResponse(req, res, null, 'Webhook received', false);
   } catch (error) {
-    console.error("Webhook processing error:", error);
+    console.error('Webhook processing error:', error);
     return generalResponse(
       req,
       res,
       null,
-      "Webhook processing failed",
+      'Webhook processing failed',
       false,
-      "error",
+      'error',
       500
     );
   }
 };
 
-export { createBookingHandler, razorpayWebhook };
+const DashboardController = async (req: Request, res: Response) => {
+  try {
+    const dashboardData = await hotelDetails(req);
+    return generalResponse(
+      req,
+      res,
+      { data: dashboardData },
+      'Dashboard details fetch successfully',
+      false
+    );
+  } catch (error) {
+    console.log('🚀 ~ :146 ~ DashboardController ~ error:', error);
+    return generalResponse(
+      req,
+      res,
+      null,
+      'Webhook processing failed',
+      false,
+      'error',
+      500
+    );
+  }
+};
+
+const BookingRooms = async (data, transaction: Transaction) => {
+  const {
+    email,
+    first_name,
+    last_name,
+    phone_number,
+    check_in,
+    check_out,
+    rooms_booked,
+    guests_per_room,
+    extra_mattresses,
+    total_amount,
+    payment_id,
+    payment_type_id,
+  } = data;
+  await Booking.create(
+    {
+      email,
+      first_name,
+      last_name,
+      phone_number,
+      check_in,
+      check_out,
+      rooms_booked,
+      guests_per_room,
+      extra_mattresses,
+      total_amount,
+      payment_id,
+      payment_type_id,
+    },
+    { transaction }
+  );
+  await HotelSettings.create();
+};
+
+export { createBookingHandler, razorpayWebhook, DashboardController };
