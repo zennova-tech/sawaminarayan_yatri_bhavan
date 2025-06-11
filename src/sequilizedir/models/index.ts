@@ -1,6 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import { DATABASE_URL } from "@/config";
-import User from "./user.model";
+import Admin from "./admin.model";
+import Booking from "./booking.model";
+import HotelSettings from "./hotelSettings.mode";
 
 const sequelize = new Sequelize(DATABASE_URL, {
   dialect: "postgres",
@@ -21,11 +23,13 @@ const sequelize = new Sequelize(DATABASE_URL, {
   // logging: NODE_ENV !== "production" && logger.info.bind(null, "\n%s"),
 });
 
-sequelize.addModels([User]);
+sequelize.addModels([Admin, Booking, HotelSettings]);
 
 const db = {
   sequelize,
-  User,
+  Admin,
+  Booking,
+  HotelSettings
 };
 
 export { db, sequelize };
