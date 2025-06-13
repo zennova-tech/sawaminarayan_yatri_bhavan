@@ -150,7 +150,7 @@ const DashboardController = async (req: Request, res: Response) => {
     return generalResponse(
       req,
       res,
-      { data: dashboardData },
+      dashboardData,
       'Dashboard details fetch successfully',
       false
     );

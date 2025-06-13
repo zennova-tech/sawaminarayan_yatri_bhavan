@@ -5,6 +5,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SECRET_KEY } from "@/config";
+import Booking from "@/sequilizedir/models/booking.model";
+import { fetchBookingsData } from "@/repository/booking.repository";
 
 const AdminLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -56,8 +58,4 @@ const AdminLogin = async (req: Request, res: Response) => {
   }
 };
 
-const AdminDashboard = async (req: Request, res: Response) => {
-  console.log("Hello Admin");
-};
-
-export { AdminDashboard, AdminLogin };
+export { AdminLogin };

@@ -5,8 +5,8 @@ import http from "http";
 import { Server } from "socket.io";
 import { PORT } from "@config";
 import router from "./routes";
-import passport from "passport";
 import { sequelize } from "./sequilizedir/models";
+import passport from "./middleware/passport";
 
 const app: Express = express();
 const port = PORT ?? 3000;
@@ -25,8 +25,8 @@ export const io = new Server(server, {
     origin: "http://localhost:3000",
   },
 });
-app.use("/", router);
 app.use(passport.initialize());
+app.use("/", router);
 
 const connectWithRetry = async () => {
   try {

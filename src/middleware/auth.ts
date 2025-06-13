@@ -2,7 +2,7 @@ import { generalResponse } from "@/utils/generalResponse";
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("jwt", { session: false }, (err, user) => {
     if (err || !user || user.email !== "swami.admin@yopmail.com") {
       return generalResponse(
@@ -19,5 +19,3 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     next();
   })(req, res, next);
 };
-
-module.exports = authMiddleware;
