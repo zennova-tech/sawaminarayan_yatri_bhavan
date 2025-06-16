@@ -6,10 +6,10 @@ import { Server } from "socket.io";
 import { PORT } from "@config";
 import router from "./routes";
 import { sequelize } from "./sequilizedir/models";
+import passport from "./middleware/passport";
 
 const app: Express = express();
 const port = PORT ?? 3000;
-
 
 app.use(bodyParser.json());
 app.use(
@@ -22,16 +22,18 @@ app.use(express.json());
 const server = http.createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: 'http://localhost:5173',
   },
 });
+app.use(passport.initialize());
 app.use("/", router);
+
 const connectWithRetry = async () => {
   try {
     await sequelize.authenticate();
-    console.log("info", "Connection has been established successfully.");
+    console.log('info', 'Connection has been established successfully.');
   } catch (error) {
-    console.log("error", "Unable to connect to the database:", error);
+    console.log('error', 'Unable to connect to the database:', error);
     setTimeout(connectWithRetry, 5000); // Retry connection after 5 seconds
   }
 };
@@ -39,7 +41,7 @@ const connectWithRetry = async () => {
 connectWithRetry();
 
 server.listen(port, () => {
-  console.log("=================================");
-  console.log("======= ENV:", port, "========");
-  console.log("=================================");
+  console.log('=================================');
+  console.log('======= ENV:', port, '========');
+  console.log('=================================');
 });
