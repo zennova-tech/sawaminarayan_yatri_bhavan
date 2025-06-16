@@ -1,8 +1,8 @@
-import { sequelize } from "../models";
-import HotelSettings from "../models/hotelSettings.mode";
+import { sequelize } from '../models';
+import HotelSettings from '../models/hotelSettings.model';
 
 const seedHotelSettings = async () => {
-  const transaction = await sequelize.transaction();
+  const transaction = await sequelize.transaction();  
   try {
     const initialSettings = {
       total_rooms: 16,

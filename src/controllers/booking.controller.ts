@@ -1,12 +1,14 @@
 import { Transaction } from 'sequelize';
-import razorpayInstance from '@/razorpay/razorpay.service';
+import razorpayInstance from '@/services/razorpay/razorpay.service';
 import { generalResponse } from '@/utils/generalResponse';
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import { RAZORPAY_WEBHOOK_SECRET } from '@/config';
-import { hotelDetails } from '@/repository/booking.repository';
+import { BookingRooms, hotelDetails } from '@/repository/booking.repository';
 import Booking from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
+import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
+import { sendWhatsAppMessage } from '@/services/whatsApp/whatsApp.service';
 
 type OrderCreateRequestBody = {
   amount: number;
@@ -23,31 +25,32 @@ const createBookingHandler = async (req: Request, res: Response) => {
       rooms,
       guest_per_room,
       amount,
-      currency,
-      receipt,
+      mattress,
+      first_name,
+      last_name,
+      phone_number,
+      email,
     } = req.body;
     const options: OrderCreateRequestBody = {
-      amount: amount * 100, // in paise
-      currency,
-      receipt,
+      amount: amount * 100,
+      receipt: `receipt_${Date.now()}`,
       notes: {
         check_in,
         check_out,
         rooms,
         guest_per_room,
+        mattress,
+        first_name,
+        last_name,
+        phone_number,
+        email,
+        amount,
       },
+      currency: 'INR',
     };
 
-    const data = await razorpayInstance.orders.create({
-      ...options,
-    });
-    return generalResponse(
-      req,
-      res,
-      { data: data },
-      'booking create sucessfully',
-      false
-    );
+    const data = await razorpayInstance.orders.create(options);
+    return generalResponse(req, res, data, 'booking create sucessfully', false);
   } catch (error) {
     throw error;
   }
@@ -108,7 +111,9 @@ const razorpayWebhook = async (req: Request, res: Response) => {
 
       try {
         // Your booking creation logic here
-        await BookingRooms(payment, req.transaction);
+        await BookingRooms(notes, payment.id, payment.method, req.transaction);
+        await sendWhatsAppMessage(notes.phone_number, notes);
+
         return generalResponse(
           req,
           res,
@@ -166,41 +171,6 @@ const DashboardController = async (req: Request, res: Response) => {
       500
     );
   }
-};
-
-const BookingRooms = async (data, transaction: Transaction) => {
-  const {
-    email,
-    first_name,
-    last_name,
-    phone_number,
-    check_in,
-    check_out,
-    rooms_booked,
-    guests_per_room,
-    extra_mattresses,
-    total_amount,
-    payment_id,
-    payment_type_id,
-  } = data;
-  await Booking.create(
-    {
-      email,
-      first_name,
-      last_name,
-      phone_number,
-      check_in,
-      check_out,
-      rooms_booked,
-      guests_per_room,
-      extra_mattresses,
-      total_amount,
-      payment_id,
-      payment_type_id,
-    },
-    { transaction }
-  );
-  await HotelSettings.create();
 };
 
 export { createBookingHandler, razorpayWebhook, DashboardController };
