@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec \"ts-node -r tsconfig-paths/register\" src/server.ts",
     "db:migrate": "npx sequelize-cli db:migrate",
-    "db:migrate:undo": "npx sequelize-cli db:migrate:undo:all"
+    "db:migrate:undo": "npx sequelize-cli db:migrate:undo:all",
+    "seed:admin": "npx ts-node src/sequilizedir/seeders/admin.seeder.ts",
+    "seed:hotel": "npx ts-node src/sequilizedir/seeders/hotelSetting.seeder.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
   "description": "",
   "dependencies": {
     "@types/stripe": "^8.0.417",
+    "axios": "^1.9.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",

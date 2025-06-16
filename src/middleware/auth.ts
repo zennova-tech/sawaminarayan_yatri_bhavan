@@ -1,6 +1,6 @@
-import { generalResponse } from "@/utils/generalResponse";
-import { NextFunction, Request, Response } from "express";
-import passport from "passport";
+import { generalResponse } from '@/utils/generalResponse';
+import { NextFunction, Request, Response } from 'express';
+import passport from 'passport';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("jwt", { session: false }, (err, user) => {
@@ -9,7 +9,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         req,
         res,
         null,
-        "Access denied: Admins only",
+        'Access denied: Admins only',
         false,
         null,
         403
