@@ -8,6 +8,10 @@ export type bookingPayload = {
   last_name: string;
   phone_number: number;
   email: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
   amount: number;
   payment_id: string;
   payment_type: string;

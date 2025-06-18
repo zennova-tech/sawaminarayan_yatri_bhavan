@@ -9,4 +9,7 @@ export const {
   SECRET_KEY,
   WHATSAPP_TOKEN,
   WHATSAPP_PHONE_NUMBER_ID,
+  MAIL_USER,
+  MAIL_PASS,
+  MAIL_CLIENT,
 } = process.env;
