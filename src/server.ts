@@ -1,12 +1,14 @@
-import express, { Express } from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import http from "http";
-import { Server } from "socket.io";
-import { PORT } from "@config";
-import router from "./routes";
-import { sequelize } from "./sequilizedir/models";
-import passport from "./middleware/passport";
+import { PORT } from '@config';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import express, { Express } from 'express';
+import http from 'http';
+import cron from 'node-cron';
+import { Server } from 'socket.io';
+import { releaseBookedRooms } from './controllers/booking.controller';
+import passport from './middleware/passport';
+import router from './routes';
+import { sequelize } from './sequilizedir/models';
 
 const app: Express = express();
 const port = PORT ?? 3000;
@@ -26,7 +28,7 @@ export const io = new Server(server, {
   },
 });
 app.use(passport.initialize());
-app.use("/", router);
+app.use('/', router);
 
 const connectWithRetry = async () => {
   try {
@@ -38,7 +40,22 @@ const connectWithRetry = async () => {
   }
 };
 
-connectWithRetry();
+const main = async () => {
+  await connectWithRetry();
+
+  // Run every day at 9:00 AM IST
+  cron.schedule(
+    '0 10 * * *',
+    async () => {
+      console.log('Running cron at 10:00 AM IST');
+      await releaseBookedRooms();
+    },
+    {
+      timezone: 'Asia/Kolkata',
+    }
+  );
+};
+main();
 
 server.listen(port, () => {
   console.log('=================================');

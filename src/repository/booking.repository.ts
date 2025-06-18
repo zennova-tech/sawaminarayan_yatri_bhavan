@@ -56,6 +56,10 @@ const BookingRooms = async (
     total_amount: data.amount,
     payment_id,
     payment_type: method,
+    address_line_1: data.address1,
+    address_line_2: data.address2,
+    city: data.city,
+    state:data.state,
   };
   await Booking.create(bookingPayload, { transaction });
   const hotelSettings = await HotelSettings.findOne({ transaction });

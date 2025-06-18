@@ -26,6 +26,10 @@ export interface IBooking {
   total_amount: number;
   payment_id?: string;
   payment_type?: string;
+  address_line_1: string;
+  address_line_2: string;
+  city: string;
+  state: string;
   created_by?: string;
   created_at?: Date;
   updated_at?: Date;
@@ -93,6 +97,22 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @AllowNull(true)
   @Column(DataType.STRING)
   payment_type?: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  address_line_1: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  address_line_2: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  city: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  state: string;
 
   @AllowNull(false)
   @Default('SYSTEM')

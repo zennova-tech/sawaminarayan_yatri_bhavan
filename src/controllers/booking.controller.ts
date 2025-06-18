@@ -1,14 +1,19 @@
-import { Transaction } from 'sequelize';
-import razorpayInstance from '@/services/razorpay/razorpay.service';
-import { generalResponse } from '@/utils/generalResponse';
-import { Request, Response } from 'express';
-import crypto from 'crypto';
-import { RAZORPAY_WEBHOOK_SECRET } from '@/config';
+import {
+  MAIL_CLIENT,
+  MAIL_PASS,
+  MAIL_USER,
+  RAZORPAY_WEBHOOK_SECRET,
+} from '@/config';
 import { BookingRooms, hotelDetails } from '@/repository/booking.repository';
 import Booking from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
-import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
+import razorpayInstance from '@/services/razorpay/razorpay.service';
 import { sendWhatsAppMessage } from '@/services/whatsApp/whatsApp.service';
+import { generalResponse } from '@/utils/generalResponse';
+import crypto from 'crypto';
+import { Request, Response } from 'express';
+import nodemailer from 'nodemailer';
+import { Op } from 'sequelize';
 
 type OrderCreateRequestBody = {
   amount: number;
@@ -30,6 +35,10 @@ const createBookingHandler = async (req: Request, res: Response) => {
       last_name,
       phone_number,
       email,
+      address1,
+      address2,
+      city,
+      state,
     } = req.body;
     const options: OrderCreateRequestBody = {
       amount: amount * 100,
@@ -45,6 +54,10 @@ const createBookingHandler = async (req: Request, res: Response) => {
         phone_number,
         email,
         amount,
+        address1,
+        address2,
+        city,
+        state,
       },
       currency: 'INR',
     };
@@ -173,4 +186,89 @@ const DashboardController = async (req: Request, res: Response) => {
   }
 };
 
-export { createBookingHandler, razorpayWebhook, DashboardController };
+const contactToMail = async (req: Request, res: Response) => {
+  try {
+    const { full_name, phone_number, message, email } = req.body;
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: MAIL_USER, // Your Gmail address
+        pass: MAIL_PASS, // App Password
+      },
+    });
+    const mailOptions = {
+      from: `"Swaminarayan Yatri Bhavan" <${MAIL_USER}>`,
+      to: MAIL_CLIENT, // Send to client email
+      subject: 'New Contact Inquiry - Swaminarayan Yatri Bhavan',
+      html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #e65100;">Swaminarayan Yatri Bhavan</h2>
+            <p>You have received a new inquiry from the contact form.</p>
+
+            <hr style="border: none; border-top: 1px solid #ccc;" />
+
+            <p><strong>Full Name:</strong> ${full_name}</p>
+            <p><strong>Phone Number:</strong> ${phone_number}</p>
+            <p><strong>Email:</strong> ${email}</p>
+
+            <p><strong>Message:</strong></p>
+            <p style="margin-left: 16px;">${message}</p>
+            
+            <hr style="border: none; border-top: 1px solid #ccc;" />
+
+            <p style="font-size: 0.9rem; color: #888;">
+            This message was submitted via the Swaminarayan Yatri Bhavan website.
+            </p>
+            </div>`,
+    };
+    await transporter.sendMail(mailOptions);
+    return generalResponse(req, res, null, 'Mail sent successfully', false);
+  } catch (error) {
+    console.log('🚀 ~ :205 ~ contactToMail ~ error:', error);
+  }
+};
+
+const releaseBookedRooms = async () => {
+  try {
+    const currentDate = new Date();
+    const expiredBookings = await Booking.findAll({
+      where: {
+        check_out: {
+          [Op.lte]: currentDate,
+        },
+      },
+    });
+    if (expiredBookings.length === 0) {
+      console.log('No expired bookings found');
+      return;
+    }
+    let totalRoomsToRelease = 0;
+    for (const booking of expiredBookings) {
+      totalRoomsToRelease += booking.rooms_booked;
+      await booking.destroy();
+    }
+    const hotelSettings = await HotelSettings.findOne();
+    if (hotelSettings) {
+      hotelSettings.available_rooms =
+        (hotelSettings.available_rooms || 0) + totalRoomsToRelease;
+      hotelSettings.booked_rooms = Math.max(
+        (hotelSettings.booked_rooms || 0) - totalRoomsToRelease,
+        0
+      );
+      await hotelSettings.save();
+    }
+    console.log(
+      `Released ${totalRoomsToRelease} rooms and removed ${expiredBookings.length} bookings`
+    );
+  } catch (error) {
+    console.log('🚀 ~ :264 ~ releaseBookedRooms ~ error:', error);
+  }
+};
+
+export {
+  contactToMail,
+  createBookingHandler,
+  DashboardController,
+  razorpayWebhook,
+  releaseBookedRooms,
+};
