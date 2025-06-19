@@ -9,3 +9,7 @@ export const checkInDateSchema = Joi.object({
     })
     .optional(),
 });
+
+export const deleteBookingSchema = Joi.object({
+  id: Joi.string().required(),
+});
