@@ -13,6 +13,8 @@ const hotelDetails = async (req: Request) => {
       'room_amount',
       'room_capacity',
       'mattress_amount',
+      'check_in_time',
+      'check_out_time',
     ],
     transaction: req.transaction,
   });

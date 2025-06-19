@@ -21,6 +21,8 @@ export interface IHotelSettings {
     room_amount: number;
     room_capacity: number;
     mattress_amount: number;
+    check_in_time: string | Date;
+    check_out_time: string | Date;
     created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date;
@@ -66,6 +68,14 @@ class HotelSettings extends Model<IHotelSettings, ICreateHotelSettingsAttributes
     @AllowNull(false)
     @Column(DataType.DECIMAL(6, 2))
     mattress_amount!: number;
+
+    @AllowNull(false)
+    @Column(DataType.TIME)
+    check_in_time!: string;
+
+    @AllowNull(false)
+    @Column(DataType.TIME)
+    check_out_time!: string;
 
     @CreatedAt
     @Column({ field: 'created_at' })
