@@ -1,5 +1,6 @@
 import {
   BASE_URL,
+  EXPLORE_URL,
   WHATSAPP_PHONE_NUMBER_ID,
   WHATSAPP_TOKEN,
   WHATSAPP_WEBHOOK_TOKEN,
@@ -8,16 +9,40 @@ import { generalResponse } from '@/utils/generalResponse';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { Request, Response } from 'express';
+import FormData from 'form-data';
+import * as fs from 'fs';
+
+const uploadMedia = async () => {
+  const formData = new FormData();
+  formData.append(
+    'file',
+    fs.createReadStream('src/assets/whatsapp_banner.jpeg')
+  );
+  formData.append('type', 'image/jpeg');
+  formData.append('messaging_product', 'whatsapp');
+
+  const response = await axios.post(
+    `https://graph.facebook.com/v22.0/${WHATSAPP_PHONE_NUMBER_ID}/media`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data.id;
+};
 
 export const sendWhatsAppMessage = async (phone_number: number, data) => {
   try {
+    const mediaId = await uploadMedia();
     const url = `https://graph.facebook.com/v22.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
     const fullName = `${data.first_name} ${data.last_name}`;
-    const formattedCheckIn = format(new Date(data.check_in), 'dd-MM-yyyy');
-    const formattedCheckOut = format(new Date(data.check_out), 'dd-MM-yyyy');
-    const exploreURL = `https://beytdwarka.com/`;
+    const formattedCheckIn = format(new Date(data.check_in), 'dd/MM/yyyy');
+    const formattedCheckOut = format(new Date(data.check_out), 'dd/MM/yyyy');
     const TEMPLATE_NAME = 'customer_booking_confirmation';
-    const imageUrl = `${BASE_URL}/images/whatsapp_banner.jpeg`;
+    const IMAGE_URL = `${BASE_URL}/images/whatsapp_banner.jpeg`;
 
     const payload = {
       messaging_product: 'whatsapp',
@@ -33,7 +58,8 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
               {
                 type: 'image',
                 image: {
-                  link: imageUrl,
+                  // link: IMAGE_URL,
+                  id: mediaId,
                 },
               },
             ],
@@ -51,9 +77,9 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
               },
               { type: 'text', text: data.mattress.toString() },
               { type: 'text', text: data.amount.toString() },
-              { type: 'text', text: '6353732585' },
-              { type: 'text', text: '7201060500' },
-              { type: 'text', text: exploreURL },
+              { type: 'text', text: '+91 63537 32585' },
+              { type: 'text', text: '+91 72010 60500' },
+              { type: 'text', text: EXPLORE_URL },
             ],
           },
         ],

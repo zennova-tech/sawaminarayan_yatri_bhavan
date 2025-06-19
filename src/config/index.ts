@@ -14,4 +14,5 @@ export const {
   MAIL_CLIENT,
   WHATSAPP_WEBHOOK_TOKEN,
   BASE_URL,
+  EXPLORE_URL,
 } = process.env;

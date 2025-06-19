@@ -13,3 +13,20 @@ export const checkInDateSchema = Joi.object({
 export const deleteBookingSchema = Joi.object({
   id: Joi.string().required(),
 });
+
+export const bookingSchema = Joi.object({
+  check_out: Joi.string().required(),
+  check_in: Joi.string().required(),
+  rooms: Joi.number().required(),
+  guest_per_room: Joi.number().required(),
+  mattress: Joi.number().optional(),
+  first_name: Joi.string().required(),
+  last_name: Joi.string().optional(),
+  phone_number: Joi.number().required(),
+  email: Joi.string().required(),
+  address1: Joi.string().required(),
+  address2: Joi.string().optional(),
+  city: Joi.string().required(),
+  state: Joi.string().required(),
+  amount: Joi.number().required(),
+});
