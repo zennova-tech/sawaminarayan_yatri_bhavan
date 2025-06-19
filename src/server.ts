@@ -9,6 +9,10 @@ import { releaseBookedRooms } from './controllers/booking.controller';
 import passport from './middleware/passport';
 import router from './routes';
 import { sequelize } from './sequilizedir/models';
+import {
+  whatsAppStatus,
+  whatsAppVerification,
+} from './services/whatsApp/whatsApp.service';
 
 const app: Express = express();
 const port = PORT ?? 3000;
@@ -19,6 +23,8 @@ app.use(
     extended: true,
   })
 );
+
+app.use('/images', express.static('src/assets'));
 app.use(cors());
 app.use(express.json());
 const server = http.createServer(app);
@@ -27,6 +33,10 @@ export const io = new Server(server, {
     origin: 'http://localhost:5173',
   },
 });
+
+// Webhook verification (required by Facebook)
+app.get('/webhook/whatsapp', whatsAppVerification);
+app.post('/webhook/whatsapp', whatsAppStatus);
 app.use(passport.initialize());
 app.use('/', router);
 

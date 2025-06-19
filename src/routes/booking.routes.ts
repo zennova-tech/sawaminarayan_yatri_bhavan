@@ -3,6 +3,7 @@ import {
   DashboardController,
   razorpayWebhook,
 } from '@/controllers/booking.controller';
+import { HotelSettingUpdate } from '@/controllers/hotelSetting.controller';
 import express, { Router } from 'express';
 
 const router: Router = express.Router();
@@ -11,6 +12,8 @@ const router: Router = express.Router();
 router.post('/create-order', createBookingHandler);
 
 router.get('/dashboard', DashboardController);
+
+router.put('/hotel-settings', HotelSettingUpdate);
 
 // Webhook route with raw body handling
 router.post(

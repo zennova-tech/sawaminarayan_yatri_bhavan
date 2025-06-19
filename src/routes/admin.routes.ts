@@ -1,16 +1,26 @@
-import { AdminDashboard } from "@/controllers/admin.controller";
-import { authMiddleware } from "@/middleware/auth";
-import validationMiddleware from "@/middleware/validation";
-import { checkInDateSchema } from "@/validationSchema/checkInDateSchema";
-import express, { Router } from "express";
+import { AdminDashboard, DeleteBooking } from '@/controllers/admin.controller';
+import { authMiddleware } from '@/middleware/auth';
+import validationMiddleware from '@/middleware/validation';
+import {
+  checkInDateSchema,
+  deleteBookingSchema,
+} from '@/validationSchema/checkInDateSchema';
+import express, { Router } from 'express';
 
 const router: Router = express.Router();
 
 router.get(
-  "/dashboard",
+  '/dashboard',
   authMiddleware,
-  validationMiddleware(checkInDateSchema, "query"),
+  validationMiddleware(checkInDateSchema, 'query'),
   AdminDashboard
+);
+
+router.delete(
+  '/booking',
+  authMiddleware,
+  validationMiddleware(deleteBookingSchema, 'query'),
+  DeleteBooking
 );
 
 export default router;

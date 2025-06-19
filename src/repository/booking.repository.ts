@@ -15,6 +15,7 @@ const hotelDetails = async (req: Request) => {
       'mattress_amount',
       'check_in_time',
       'check_out_time',
+      'under_maintenance_rooms',
     ],
     transaction: req.transaction,
   });
@@ -61,7 +62,7 @@ const BookingRooms = async (
     address_line_1: data.address1,
     address_line_2: data.address2,
     city: data.city,
-    state:data.state,
+    state: data.state,
   };
   await Booking.create(bookingPayload, { transaction });
   const hotelSettings = await HotelSettings.findOne({ transaction });
@@ -74,4 +75,10 @@ const BookingRooms = async (
   await hotelSettings.save({ transaction });
 };
 
-export { hotelDetails, fetchBookingsData, BookingRooms };
+const deleteBookingData = async (id: string) => {
+  return await Booking.destroy({
+    where: { id },
+  });
+};
+
+export { BookingRooms, deleteBookingData, fetchBookingsData, hotelDetails };
