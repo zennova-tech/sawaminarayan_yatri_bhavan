@@ -63,7 +63,13 @@ const createBookingHandler = async (req: Request, res: Response) => {
     };
 
     const data = await razorpayInstance.orders.create(options);
-    return generalResponse(req, res, data, 'booking create sucessfully', false);
+    return generalResponse(
+      req,
+      res,
+      data,
+      'booking create successfully',
+      false
+    );
   } catch (error) {
     throw error;
   }
@@ -124,7 +130,7 @@ const razorpayWebhook = async (req: Request, res: Response) => {
 
       try {
         // Your booking creation logic here
-        await BookingRooms(notes, payment.id, payment.method, req.transaction);
+        await BookingRooms(notes, req.transaction, payment.id, payment.method);
         await sendWhatsAppMessage(notes.phone_number, notes);
 
         return generalResponse(

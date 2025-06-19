@@ -1,6 +1,6 @@
 export type bookingPayload = {
-  check_in: Date;
   check_out: Date;
+  check_in: Date;
   rooms: number;
   guest_per_room: number;
   mattress: number | null;
@@ -13,6 +13,6 @@ export type bookingPayload = {
   city: string;
   state: string;
   amount: number;
-  payment_id: string;
-  payment_type: string;
+  payment_id?: string;
+  payment_type?: string;
 };

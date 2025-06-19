@@ -42,9 +42,9 @@ const fetchBookingsData = async (checkInDate?: string) => {
 
 const BookingRooms = async (
   data: bookingPayload,
-  payment_id: string,
-  method: string,
-  transaction: Transaction
+  transaction: Transaction,
+  payment_id?: string,
+  method?: string
 ) => {
   const bookingPayload: IBooking = {
     check_in: data.check_in,
@@ -64,7 +64,6 @@ const BookingRooms = async (
     city: data.city,
     state: data.state,
   };
-  await Booking.create(bookingPayload, { transaction });
   const hotelSettings = await HotelSettings.findOne({ transaction });
   hotelSettings.booked_rooms = (hotelSettings.booked_rooms || 0) + data.rooms;
   hotelSettings.available_rooms =
@@ -73,6 +72,7 @@ const BookingRooms = async (
     throw new Error('Not enough available rooms');
   }
   await hotelSettings.save({ transaction });
+  return await Booking.create(bookingPayload, { transaction });
 };
 
 const deleteBookingData = async (id: string) => {

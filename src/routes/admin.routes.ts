@@ -1,7 +1,8 @@
-import { AdminDashboard, DeleteBooking } from '@/controllers/admin.controller';
+import { AdminDashboard, createBooking, DeleteBooking } from '@/controllers/admin.controller';
 import { authMiddleware } from '@/middleware/auth';
 import validationMiddleware from '@/middleware/validation';
 import {
+  bookingSchema,
   checkInDateSchema,
   deleteBookingSchema,
 } from '@/validationSchema/checkInDateSchema';
@@ -21,6 +22,13 @@ router.delete(
   authMiddleware,
   validationMiddleware(deleteBookingSchema, 'query'),
   DeleteBooking
+);
+
+router.post(
+  '/booking',
+  authMiddleware,
+  validationMiddleware(bookingSchema, 'body'),
+  createBooking
 );
 
 export default router;

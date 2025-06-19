@@ -2,7 +2,7 @@ import { sequelize } from '../models';
 import HotelSettings from '../models/hotelSettings.model';
 
 const seedHotelSettings = async () => {
-  const transaction = await sequelize.transaction();  
+  const transaction = await sequelize.transaction();
   try {
     const initialSettings = {
       total_rooms: 16,
@@ -12,6 +12,8 @@ const seedHotelSettings = async () => {
       room_amount: 1500.0,
       room_capacity: 3,
       mattress_amount: 300.0,
+      check_in_time: '10:00:00',
+      check_out_time: '09:00:00',
     };
     const existingSetting = await HotelSettings.findOne();
     if (existingSetting) {
