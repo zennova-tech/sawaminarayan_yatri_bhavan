@@ -53,9 +53,9 @@ const connectWithRetry = async () => {
 const main = async () => {
   await connectWithRetry();
 
-  // Run every day at 9:00 AM IST
+  // Run every day at 10:00 AM IST
   cron.schedule(
-    '0 10 * * *',
+    '0 12 * * *',
     async () => {
       console.log('Running cron at 10:00 AM IST');
       await releaseBookedRooms();

@@ -32,10 +32,10 @@ const HotelSettingUpdate = async (req: Request, res: Response) => {
 
 const getAvailableRoomsController = async (req: Request, res: Response) => {
   try {
-    const { checkInDate, checkOutDate } = req.query;
+    const { check_in, check_out } = req.query;
 
-    const checkIn = new Date(checkInDate as string);
-    const checkOut = new Date(checkOutDate as string);
+    const checkIn = new Date(check_in as string);
+    const checkOut = new Date(check_out as string);
     const availableRooms = await getAvailableRooms(checkIn, checkOut);
     return generalResponse(
       req,
@@ -57,4 +57,4 @@ const getAvailableRoomsController = async (req: Request, res: Response) => {
   }
 };
 
-export { HotelSettingUpdate, getAvailableRoomsController };
+export { getAvailableRoomsController, HotelSettingUpdate };
