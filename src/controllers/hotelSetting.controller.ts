@@ -1,3 +1,4 @@
+import { getAvailableRooms } from '@/repository/booking.repository';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { Request, Response } from 'express';
@@ -28,4 +29,32 @@ const HotelSettingUpdate = async (req: Request, res: Response) => {
     );
   }
 };
-export { HotelSettingUpdate };
+
+const getAvailableRoomsController = async (req: Request, res: Response) => {
+  try {
+    const { checkInDate, checkOutDate } = req.query;
+
+    const checkIn = new Date(checkInDate as string);
+    const checkOut = new Date(checkOutDate as string);
+    const availableRooms = await getAvailableRooms(checkIn, checkOut);
+    return generalResponse(
+      req,
+      res,
+      availableRooms,
+      'Available rooms fetched successfully',
+      false
+    );
+  } catch (ex) {
+    return generalResponse(
+      req,
+      res,
+      null,
+      'Failed to update hotel settings data',
+      false,
+      'error',
+      500
+    );
+  }
+};
+
+export { HotelSettingUpdate, getAvailableRoomsController };

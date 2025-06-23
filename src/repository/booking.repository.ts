@@ -2,7 +2,7 @@ import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
 import Booking, { IBooking } from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import { Request } from 'express';
-import { literal, Transaction } from 'sequelize';
+import { literal, Op, Transaction } from 'sequelize';
 
 const hotelDetails = async (req: Request) => {
   return await HotelSettings.findOne({
@@ -81,4 +81,32 @@ const deleteBookingData = async (id: string) => {
   });
 };
 
-export { BookingRooms, deleteBookingData, fetchBookingsData, hotelDetails };
+const getAvailableRooms = async (checkInDate: Date, checkOutDate: Date) => {
+  const overlappingBookings = await Booking.findAll({
+    where: {
+      check_in: {
+        [Op.lt]: checkOutDate, // booking starts before user's checkout
+      },
+      check_out: {
+        [Op.gt]: checkInDate, // booking ends after user's check-in
+      },
+    },
+  });
+
+  // Sum up rooms booked in these bookings
+  const roomsBooked = overlappingBookings.reduce(
+    (sum, booking) => sum + booking.rooms_booked,
+    0
+  );
+
+  const hotelSettingData = await HotelSettings.findOne();
+
+  const availableRooms =
+    hotelSettingData.total_rooms -
+    hotelSettingData.under_maintenance_rooms -
+    roomsBooked;
+
+  return availableRooms > 0 ? availableRooms : 0;
+};
+
+export { BookingRooms, deleteBookingData, fetchBookingsData, hotelDetails, getAvailableRooms };
