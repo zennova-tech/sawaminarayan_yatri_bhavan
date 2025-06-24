@@ -43,7 +43,7 @@
       "@logger": ["common/utils/logger/index.ts"],
       "@exceptions": ["common/helpers/response/HttpException.ts"]
     },
-    "inlineSources": true
+    "inlineSources": false
   },
   "include": [
     "src/**/*.ts",
