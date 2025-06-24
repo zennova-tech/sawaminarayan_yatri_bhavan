@@ -11,7 +11,7 @@
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "module": "commonjs",
-    "pretty": true,
+    "pretty": false,
     "sourceMap": false,
     "declaration": false,
     "declarationMap": false,
@@ -44,6 +44,14 @@
       "@exceptions": ["common/helpers/response/HttpException.ts"]
     },
     "inlineSources": false
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false,
+    "fileExtensions": {
+      "input": ".ts",
+      "output": ".js"
+    }
   },
   "include": [
     "src/**/*.ts",
