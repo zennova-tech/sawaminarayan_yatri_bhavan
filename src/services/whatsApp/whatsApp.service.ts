@@ -42,7 +42,7 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
     const formattedCheckIn = format(new Date(data.check_in), 'dd/MM/yyyy');
     const formattedCheckOut = format(new Date(data.check_out), 'dd/MM/yyyy');
     const TEMPLATE_NAME = 'customer_booking_confirmation';
-    const IMAGE_URL = `${BASE_URL}/images/whatsapp_banner.jpeg`;
+    // const IMAGE_URL = `${BASE_URL}/images/whatsapp_banner.jpeg`;
 
     const payload = {
       messaging_product: 'whatsapp',
