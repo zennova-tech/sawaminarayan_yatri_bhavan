@@ -5,7 +5,7 @@ const dotEnv = require('dotenv');
 dotEnv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 console.log(
   '🚀 ~ :18 ~ module.exports.DATABASE_URL:',
-  module.exports.DATABASE_URL
+  process.env.DATABASE_URL
 );
 
 module.exports = {
