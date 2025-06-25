@@ -32,7 +32,7 @@ export const io = new Server(server, {
   cors: {
     origin: [
       'http://localhost:5173',
-      'https://swaminarayan-yatri-bhavan-frontend-eight.vercel.app',
+      'https://swaminarayan-yatri-bhavan-fr-git-44f560-smits-projects-846886bb.vercel.app',
     ],
   },
 });
