@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec \"ts-node -r tsconfig-paths/register\" src/server.ts",
     "build": "npx tsc && npx tsc-alias",
-    "start": "node dist/server.js",
+    "start": "ts-node src/server.ts",
     "postinstall": "npm run build && npm run db:migrate",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo:all",
