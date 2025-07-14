@@ -7,6 +7,7 @@ import {
 import {
   createPriceRule,
   deletePriceRuleData,
+  fetchPriceRuleData,
   updatePriceRuleData,
 } from "@/repository/priceRules.repository";
 import Booking from "@/sequilizedir/models/booking.model";
@@ -186,6 +187,29 @@ const updateRoomRule = async (req: Request, res: Response) => {
   }
 };
 
+const PriceRules = async (req: Request, res: Response) => {
+  try {
+    const data = await fetchPriceRuleData();
+    return generalResponse(
+      req,
+      res,
+      data,
+      "Booking List fetched successfully",
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      "Failed to fetch price rule list",
+      false,
+      "error",
+      500
+    );
+  }
+};
+
 export {
   AdminDashboard,
   createBooking,
@@ -193,4 +217,5 @@ export {
   createRoomRule,
   DeleteRoomRule,
   updateRoomRule,
+  PriceRules,
 };

@@ -16,4 +16,13 @@ const deletePriceRuleData = async (id: string) => {
   });
 };
 
-export { createPriceRule, deletePriceRuleData, updatePriceRuleData };
+const fetchPriceRuleData = async () => {
+  return await RoomPriceRules.findAll();
+};
+
+export {
+  createPriceRule,
+  deletePriceRuleData,
+  updatePriceRuleData,
+  fetchPriceRuleData,
+};

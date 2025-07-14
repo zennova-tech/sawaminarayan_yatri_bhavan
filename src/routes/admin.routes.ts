@@ -4,6 +4,7 @@ import {
   createRoomRule,
   DeleteBooking,
   DeleteRoomRule,
+  PriceRules,
   updateRoomRule,
 } from "@/controllers/admin.controller";
 import { authMiddleware } from "@/middleware/auth";
@@ -38,6 +39,12 @@ router.post(
   authMiddleware,
   validationMiddleware(bookingSchema, "body"),
   createBooking
+);
+
+router.get(
+  "/price-rule",
+  authMiddleware,
+  PriceRules
 );
 
 router.post(
