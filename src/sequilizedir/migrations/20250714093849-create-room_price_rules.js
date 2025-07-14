@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
       await queryInterface.createTable(
-        "users",
+        "room_price_rules",
         {
           id: {
             type: Sequelize.UUID,
@@ -13,21 +13,14 @@ module.exports = {
             allowNull: false,
             primaryKey: true,
           },
-          email: { type: Sequelize.STRING, allowNull: true },
-          first_name: { type: Sequelize.STRING, allowNull: false },
-          role: {
-            type: Sequelize.ENUM("user", "admin"),
+          name: { type: Sequelize.STRING, allowNull: false },
+          start_date: { type: Sequelize.DATE, allowNull: false },
+          end_date: { type: Sequelize.DATE, allowNull: false },
+          price_per_night: {
+            type: Sequelize.DECIMAL(10, 2),
             allowNull: false,
-            defaultValue: "user",
           },
-          last_name: { type: Sequelize.STRING, allowNull: true },
-          phone_number: { type: Sequelize.STRING, allowNull: false },
-          address_line_1: { type: Sequelize.STRING, allowNull: true },
-          address_line_2: { type: Sequelize.STRING, allowNull: true },
-          city: { type: Sequelize.STRING, allowNull: false },
-          state: { type: Sequelize.STRING, allowNull: false },
-          pin_code: { type: Sequelize.STRING, allowNull: true },
-          password: { type: Sequelize.STRING, allowNull: false },
+          is_default_price: { type: Sequelize.BOOLEAN, allowNull: false },
           created_at: {
             type: Sequelize.DATE,
             allowNull: false,
@@ -43,7 +36,7 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
-      await queryInterface.dropTable("users", {
+      await queryInterface.dropTable("room_price_rules", {
         transaction: t,
         cascade: true,
       });

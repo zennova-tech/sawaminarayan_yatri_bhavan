@@ -16,3 +16,8 @@ export type bookingPayload = {
   payment_id?: string;
   payment_type?: string;
 };
+
+export enum Role {
+  Admin = "admin",
+  User = "user",
+}

@@ -1,12 +1,10 @@
 import { checkUserService } from "@/repository/auth.repository";
-import Admin from "@/sequilizedir/models/admin.model";
+import Admin from "@/sequilizedir/models/users.model";
 import { generalResponse } from "@/utils/generalResponse";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SECRET_KEY } from "@/config";
-import Booking from "@/sequilizedir/models/booking.model";
-import { fetchBookingsData } from "@/repository/booking.repository";
 
 const AdminLogin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
