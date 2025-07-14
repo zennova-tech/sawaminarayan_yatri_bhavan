@@ -20,7 +20,11 @@ module.exports = {
             type: Sequelize.DECIMAL(10, 2),
             allowNull: false,
           },
-          is_default_price: { type: Sequelize.BOOLEAN, allowNull: false },
+          is_default_price: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+          },
           created_at: {
             type: Sequelize.DATE,
             allowNull: false,

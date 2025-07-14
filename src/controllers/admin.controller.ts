@@ -1,12 +1,18 @@
-import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
+import { bookingPayload } from "@/interfaces/types/bookingInterfaces";
 import {
   BookingRooms,
   deleteBookingData,
   fetchBookingsData,
-} from '@/repository/booking.repository';
-import Booking from '@/sequilizedir/models/booking.model';
-import { generalResponse } from '@/utils/generalResponse';
-import { Request, Response } from 'express';
+} from "@/repository/booking.repository";
+import {
+  createPriceRule,
+  deletePriceRuleData,
+  updatePriceRuleData,
+} from "@/repository/priceRules.repository";
+import Booking from "@/sequilizedir/models/booking.model";
+import { IRoomPriceRules } from "@/sequilizedir/models/roomPriceRules.model";
+import { generalResponse } from "@/utils/generalResponse";
+import { Request, Response } from "express";
 
 const AdminDashboard = async (req: Request, res: Response) => {
   const { checkInDate } = req.query;
@@ -18,17 +24,17 @@ const AdminDashboard = async (req: Request, res: Response) => {
       req,
       res,
       bookings,
-      'Booking List fetched successfully',
+      "Booking List fetched successfully",
       false
     );
   } catch (error) {
     return generalResponse(
       req,
       res,
-      null,
-      'Failed to fetch booking list',
+      error,
+      "Failed to fetch booking list",
       false,
-      'error',
+      "error",
       500
     );
   }
@@ -41,17 +47,17 @@ const DeleteBooking = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      'Booking deleted successfully',
+      "Booking deleted successfully",
       false
     );
   } catch (error) {
     return generalResponse(
       req,
       res,
-      null,
-      'Failed to delete booking',
+      error,
+      "Failed to delete booking",
       false,
-      'error',
+      "error",
       500
     );
   }
@@ -80,20 +86,111 @@ const createBooking = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      'Booking created successfully',
+      "Booking created successfully",
       false
     );
   } catch (error) {
     return generalResponse(
       req,
       res,
-      null,
-      'Failed to create booking',
+      error,
+      "Failed to create booking",
       false,
-      'error',
+      "error",
       500
     );
   }
 };
 
-export { AdminDashboard, createBooking, DeleteBooking };
+const createRoomRule = async (req: Request, res: Response) => {
+  try {
+    const payload: IRoomPriceRules = {
+      name: req.body.name,
+      start_date: req.body.start_date,
+      end_date: req.body.end_date,
+      price_per_night: req.body.price_per_night,
+      is_default_price: req.body.is_default_price,
+    };
+    const data = await createPriceRule(payload);
+    return generalResponse(
+      req,
+      res,
+      data,
+      "Room rule created successfully",
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      "Failed to create price rule",
+      false,
+      "error",
+      500
+    );
+  }
+};
+
+const DeleteRoomRule = async (req: Request, res: Response) => {
+  try {
+    const data = await deletePriceRuleData(String(req.query.id));
+    return generalResponse(
+      req,
+      res,
+      data,
+      "Room rule deleted successfully",
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      "Failed to delete room rule",
+      false,
+      "error",
+      500
+    );
+  }
+};
+
+const updateRoomRule = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const payload: IRoomPriceRules = {
+      name: req.body.name,
+      start_date: req.body.start_date,
+      end_date: req.body.end_date,
+      price_per_night: req.body.price_per_night,
+      is_default_price: req.body.is_default_price,
+    };
+    const data = await updatePriceRuleData(id, payload);
+    return generalResponse(
+      req,
+      res,
+      data,
+      "Room rule updated successfully",
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      "Failed to update room rule",
+      false,
+      "error",
+      500
+    );
+  }
+};
+
+export {
+  AdminDashboard,
+  createBooking,
+  DeleteBooking,
+  createRoomRule,
+  DeleteRoomRule,
+  updateRoomRule,
+};

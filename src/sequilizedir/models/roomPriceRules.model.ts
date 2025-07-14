@@ -13,15 +13,15 @@ import {
 } from "sequelize-typescript";
 
 export interface IRoomPriceRules {
-  id: string;
+  id?: string;
   name: string;
   start_date: string | Date;
   end_date: string | Date;
   price_per_night: number;
   is_default_price: boolean;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
 
 interface ICreateRoomPriceRulesAttribute
