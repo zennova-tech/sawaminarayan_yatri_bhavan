@@ -4,6 +4,7 @@ import {
   createRoomRule,
   DeleteBooking,
   DeleteRoomRule,
+  updateRoomRule,
 } from "@/controllers/admin.controller";
 import { authMiddleware } from "@/middleware/auth";
 import validationMiddleware from "@/middleware/validation";
