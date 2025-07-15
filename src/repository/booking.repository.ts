@@ -1,25 +1,25 @@
 import {
   bookingPayload,
   usersPayload,
-} from "@/interfaces/types/bookingInterfaces";
-import Booking, { IBooking } from "@/sequilizedir/models/booking.model";
-import HotelSettings from "@/sequilizedir/models/hotelSettings.model";
-import Users from "@/sequilizedir/models/users.model";
-import { Request } from "express";
-import { literal, Op, Transaction } from "sequelize";
+} from '@/interfaces/types/bookingInterfaces';
+import Booking, { IBooking } from '@/sequilizedir/models/booking.model';
+import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
+import Users from '@/sequilizedir/models/users.model';
+import { Request } from 'express';
+import { literal, Op, Transaction } from 'sequelize';
 
 const hotelDetails = async (req: Request) => {
   return await HotelSettings.findOne({
     attributes: [
-      "total_rooms",
-      "available_rooms",
-      "booked_rooms",
-      "room_amount",
-      "room_capacity",
-      "mattress_amount",
-      "check_in_time",
-      "check_out_time",
-      "under_maintenance_rooms",
+      'total_rooms',
+      'available_rooms',
+      'booked_rooms',
+      'room_amount',
+      'room_capacity',
+      'mattress_amount',
+      'check_in_time',
+      'check_out_time',
+      'under_maintenance_rooms',
     ],
     transaction: req.transaction,
   });
@@ -28,13 +28,13 @@ const hotelDetails = async (req: Request) => {
 const fetchBookingsData = async (checkInDate?: string) => {
   return await Booking.findAll({
     attributes: [
-      "id",
-      "check_in",
-      "check_out",
-      "rooms_booked",
-      "guests_per_room",
-      "extra_mattresses",
-      "total_amount",
+      'id',
+      'check_in',
+      'check_out',
+      'rooms_booked',
+      'guests_per_room',
+      'extra_mattresses',
+      'total_amount',
     ],
     where: {
       ...(checkInDate ? { check_in: new Date(checkInDate) } : {}),
@@ -42,8 +42,14 @@ const fetchBookingsData = async (checkInDate?: string) => {
     include: [
       {
         model: Users,
-        as: "users",
-        attributes: ["phone_number"],
+        as: 'users',
+        attributes: [
+          [
+            literal(`CONCAT("users"."first_name", ' ', "users"."last_name")`),
+            'name',
+          ],
+          'phone_number',
+        ],
       },
     ],
   });
@@ -71,7 +77,7 @@ const BookingRooms = async (
   hotelSettings.available_rooms =
     (hotelSettings.available_rooms || 0) - data.rooms;
   if (hotelSettings.available_rooms < 0) {
-    throw new Error("Not enough available rooms");
+    throw new Error('Not enough available rooms');
   }
   await hotelSettings.save({ transaction });
   return await Booking.create(bookingPayload, { transaction });
