@@ -27,7 +27,7 @@ module.exports = {
           city: { type: Sequelize.STRING, allowNull: false },
           state: { type: Sequelize.STRING, allowNull: false },
           pin_code: { type: Sequelize.STRING, allowNull: true },
-          password: { type: Sequelize.STRING, allowNull: false },
+          password: { type: Sequelize.STRING, allowNull: true },
           created_at: {
             type: Sequelize.DATE,
             allowNull: false,

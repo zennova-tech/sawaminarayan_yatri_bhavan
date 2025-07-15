@@ -3,17 +3,25 @@ import {
   MAIL_PASS,
   MAIL_USER,
   RAZORPAY_WEBHOOK_SECRET,
-} from '@/config';
-import { BookingRooms, hotelDetails } from '@/repository/booking.repository';
-import Booking from '@/sequilizedir/models/booking.model';
-import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
-import razorpayInstance from '@/services/razorpay/razorpay.service';
-import { sendWhatsAppMessage } from '@/services/whatsApp/whatsApp.service';
-import { generalResponse } from '@/utils/generalResponse';
-import crypto from 'crypto';
-import { Request, Response } from 'express';
-import nodemailer from 'nodemailer';
-import { Op } from 'sequelize';
+} from "@/config";
+import {
+  bookingPayload,
+  usersPayload,
+} from "@/interfaces/types/bookingInterfaces";
+import {
+  BookingRooms,
+  hotelDetails,
+  UserBookings,
+} from "@/repository/booking.repository";
+import Booking from "@/sequilizedir/models/booking.model";
+import HotelSettings from "@/sequilizedir/models/hotelSettings.model";
+import razorpayInstance from "@/services/razorpay/razorpay.service";
+import { sendWhatsAppMessage } from "@/services/whatsApp/whatsApp.service";
+import { generalResponse } from "@/utils/generalResponse";
+import crypto from "crypto";
+import { Request, Response } from "express";
+import nodemailer from "nodemailer";
+import { Op } from "sequelize";
 
 type OrderCreateRequestBody = {
   amount: number;
@@ -43,6 +51,7 @@ const createBookingHandler = async (req: Request, res: Response) => {
     const options: OrderCreateRequestBody = {
       amount: amount * 100,
       receipt: `receipt_${Date.now()}`,
+      currency: "INR",
       notes: {
         check_in,
         check_out,
@@ -59,7 +68,6 @@ const createBookingHandler = async (req: Request, res: Response) => {
         city,
         state,
       },
-      currency: 'INR',
     };
 
     const data = await razorpayInstance.orders.create(options);
@@ -67,7 +75,7 @@ const createBookingHandler = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      'booking create successfully',
+      "booking create successfully",
       false
     );
   } catch (error) {
@@ -79,44 +87,44 @@ const razorpayWebhook = async (req: Request, res: Response) => {
   try {
     const secret = RAZORPAY_WEBHOOK_SECRET;
     if (!secret) {
-      console.error('RAZORPAY_WEBHOOK_SECRET is not configured');
+      console.error("RAZORPAY_WEBHOOK_SECRET is not configured");
       return generalResponse(
         req,
         res,
         null,
-        'Webhook secret not configured',
+        "Webhook secret not configured",
         false,
-        'error',
+        "error",
         500
       );
     }
 
-    const receivedSignature = req.headers['x-razorpay-signature'] as string;
+    const receivedSignature = req.headers["x-razorpay-signature"] as string;
     if (!receivedSignature) {
       return generalResponse(
         req,
         res,
         null,
-        'No signature received',
+        "No signature received",
         false,
-        'error',
+        "error",
         400
       );
     }
 
     const generatedSignature = crypto
-      .createHmac('sha256', secret)
+      .createHmac("sha256", secret)
       .update(JSON.stringify(req.body))
-      .digest('hex');
+      .digest("hex");
 
     if (generatedSignature !== receivedSignature) {
       return generalResponse(
         req,
         res,
         null,
-        'Invalid webhook signature',
+        "Invalid webhook signature",
         false,
-        'error',
+        "error",
         400
       );
     }
@@ -124,45 +132,63 @@ const razorpayWebhook = async (req: Request, res: Response) => {
     const event = req.body.event;
     const payload = req.body.payload;
 
-    if (event === 'payment.captured') {
+    if (event === "payment.captured") {
       const payment = payload.payment.entity;
       const notes = payment.notes || {};
 
       try {
-        // Your booking creation logic here
-        await BookingRooms(notes, req.transaction, payment.id, payment.method);
+        const bookingNotes: bookingPayload = {
+          check_in: notes.check_in,
+          check_out: notes.check_out,
+          rooms: notes.rooms,
+          guest_per_room: notes.guest_per_room,
+          mattress: notes.mattress,
+          amount: notes.amount,
+        };
+        const userPayload: usersPayload = {
+          first_name: notes.first_name,
+          last_name: notes.last_name,
+          phone_number: notes.phone_number,
+          email: notes.email,
+          address1: notes.address1,
+          address2: notes.address2,
+          city: notes.city,
+          state: notes.state,
+        };
+        const userData = await UserBookings(userPayload, req.transaction);
+        notes.user_id = userData.id;
+        await BookingRooms(bookingNotes, req.transaction);
         await sendWhatsAppMessage(notes.phone_number, notes);
-
         return generalResponse(
           req,
           res,
           { paymentId: payment.id },
-          'Payment processed successfully',
+          "Payment processed successfully",
           false
         );
       } catch (err) {
-        console.error('DB Insert Failed', err);
+        console.error("DB Insert Failed", err);
         return generalResponse(
           req,
           res,
           null,
-          'Booking creation failed',
+          "Booking creation failed",
           false,
-          'error',
+          "error",
           500
         );
       }
     }
-    return generalResponse(req, res, null, 'Webhook received', false);
+    return generalResponse(req, res, null, "Webhook received", false);
   } catch (error) {
-    console.error('Webhook processing error:', error);
+    console.error("Webhook processing error:", error);
     return generalResponse(
       req,
       res,
       null,
-      'Webhook processing failed',
+      "Webhook processing failed",
       false,
-      'error',
+      "error",
       500
     );
   }
@@ -175,18 +201,18 @@ const DashboardController = async (req: Request, res: Response) => {
       req,
       res,
       dashboardData,
-      'Dashboard details fetch successfully',
+      "Dashboard details fetch successfully",
       false
     );
   } catch (error) {
-    console.log('🚀 ~ :146 ~ DashboardController ~ error:', error);
+    console.log("🚀 ~ :146 ~ DashboardController ~ error:", error);
     return generalResponse(
       req,
       res,
       null,
-      'Webhook processing failed',
+      "Webhook processing failed",
       false,
-      'error',
+      "error",
       500
     );
   }
@@ -196,7 +222,7 @@ const contactToMail = async (req: Request, res: Response) => {
   try {
     const { full_name, phone_number, message, email } = req.body;
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: MAIL_USER, // Your Gmail address
         pass: MAIL_PASS, // App Password
@@ -205,7 +231,7 @@ const contactToMail = async (req: Request, res: Response) => {
     const mailOptions = {
       from: `"Swaminarayan Yatri Bhavan" <${MAIL_USER}>`,
       to: MAIL_CLIENT, // Send to client email
-      subject: 'New Contact Inquiry - Swaminarayan Yatri Bhavan',
+      subject: "New Contact Inquiry - Swaminarayan Yatri Bhavan",
       html: `
             <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #e65100;">Swaminarayan Yatri Bhavan</h2>
@@ -228,9 +254,9 @@ const contactToMail = async (req: Request, res: Response) => {
             </div>`,
     };
     await transporter.sendMail(mailOptions);
-    return generalResponse(req, res, null, 'Mail sent successfully', false);
+    return generalResponse(req, res, null, "Mail sent successfully", false);
   } catch (error) {
-    console.log('🚀 ~ :205 ~ contactToMail ~ error:', error);
+    console.log("🚀 ~ :205 ~ contactToMail ~ error:", error);
   }
 };
 
@@ -245,7 +271,7 @@ const releaseBookedRooms = async () => {
       },
     });
     if (expiredBookings.length === 0) {
-      console.log('No expired bookings found');
+      console.log("No expired bookings found");
       return;
     }
     let totalRoomsToRelease = 0;
@@ -267,7 +293,7 @@ const releaseBookedRooms = async () => {
       `Released ${totalRoomsToRelease} rooms and removed ${expiredBookings.length} bookings`
     );
   } catch (error) {
-    console.log('🚀 ~ :264 ~ releaseBookedRooms ~ error:', error);
+    console.log("🚀 ~ :264 ~ releaseBookedRooms ~ error:", error);
   }
 };
 

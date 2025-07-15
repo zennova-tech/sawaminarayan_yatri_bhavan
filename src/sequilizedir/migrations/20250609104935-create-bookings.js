@@ -1,5 +1,7 @@
 "use strict";
 
+const { ref } = require("joi");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -21,6 +23,11 @@ module.exports = {
             type: Sequelize.INTEGER,
             allowNull: true,
             defaultValue: 0,
+          },
+          user_id: {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: { model: "users", key: "id" },
           },
           total_amount: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
           payment_id: { type: Sequelize.UUID, allowNull: true },
