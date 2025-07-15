@@ -64,7 +64,7 @@ router.put(
 router.delete(
   "/price-rule",
   authMiddleware,
-  validationMiddleware(deleteRoomRuleSchema, "body"),
+  validationMiddleware(deleteRoomRuleSchema, "query"),
   DeleteRoomRule
 );
 

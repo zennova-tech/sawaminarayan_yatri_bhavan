@@ -122,7 +122,7 @@ const createRoomRule = async (req: Request, res: Response) => {
       start_date: req.body.start_date,
       end_date: req.body.end_date,
       price_per_night: req.body.price_per_night,
-      is_default_price: req.body.is_default_price,
+      is_default_price: false
     };
     const data = await createPriceRule(payload);
     return generalResponse(

@@ -34,7 +34,7 @@ export const bookingSchema = Joi.object({
 export const roomRuleSchema = Joi.object({
   name: Joi.string().required(),
   start_date: Joi.string().required(),
-  end_date: Joi.number().required(),
+  end_date: Joi.string().required(),
   price_per_night: Joi.number().required(),
   is_default_price: Joi.boolean().optional(),
 });
