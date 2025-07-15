@@ -10,7 +10,10 @@ import {
   CreatedAt,
   UpdatedAt,
   DeletedAt,
+  ForeignKey,
+  HasMany,
 } from "sequelize-typescript";
+import Booking from "./booking.model";
 
 export interface IUsers {
   id?: string;
@@ -78,7 +81,7 @@ class Users extends Model<IUsers, ICreateAdminAttribute> {
   @Column(DataType.STRING)
   pin_code: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.STRING)
   password: string;
 
@@ -93,6 +96,9 @@ class Users extends Model<IUsers, ICreateAdminAttribute> {
   @DeletedAt
   @Column({ field: "deleted_at" })
   deleted_at: Date;
+
+  @HasMany(() => Booking)
+  bookings: Booking[];
 }
 
 export default Users;

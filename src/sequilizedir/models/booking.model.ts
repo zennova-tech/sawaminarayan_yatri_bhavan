@@ -9,11 +9,14 @@ import {
   CreatedAt,
   UpdatedAt,
   DeletedAt,
+  ForeignKey,
+  BelongsTo,
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
+import Users from "./users.model";
 
 export interface IBooking {
-  id: string;
+  id?: string;
   check_in: Date;
   check_out: Date;
   rooms_booked: number;
@@ -21,11 +24,12 @@ export interface IBooking {
   extra_mattresses: number;
   total_amount: number;
   payment_id: string;
+  user_id: string;
   payment_type: string;
-  created_by: string;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date;
+  created_by?: string;
+  created_at?: Date;
+  updated_at?: Date;
+  deleted_at?: Date;
 }
 
 interface ICreateBookingAttributes extends Optional<IBooking, "id"> {}
@@ -74,6 +78,10 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @Column(DataType.STRING)
   payment_type: string;
 
+  @ForeignKey(() => Users)
+  @Column(DataType.UUID)
+  user_id: string;
+
   @AllowNull(false)
   @Default("SYSTEM")
   @Column(DataType.STRING)
@@ -90,6 +98,9 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @DeletedAt
   @Column({ field: "deleted_at" })
   deleted_at: Date;
+
+  @BelongsTo(() => Users, { as: "users" })
+  user: Users;
 }
 
 export default Booking;

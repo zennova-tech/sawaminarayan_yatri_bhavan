@@ -1,8 +1,12 @@
-import { bookingPayload } from "@/interfaces/types/bookingInterfaces";
+import {
+  bookingPayload,
+  usersPayload,
+} from "@/interfaces/types/bookingInterfaces";
 import {
   BookingRooms,
   deleteBookingData,
   fetchBookingsData,
+  UserBookings,
 } from "@/repository/booking.repository";
 import {
   createPriceRule,
@@ -72,17 +76,25 @@ const createBooking = async (req: Request, res: Response) => {
       rooms: req.body.rooms,
       guest_per_room: req.body.guest_per_room,
       mattress: req.body.mattress,
+      amount: req.body.amount,
+    };
+    const userPayload: usersPayload = {
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       phone_number: req.body.phone_number,
       email: req.body.email,
-      amount: req.body.amount,
       address1: req.body.address1,
       address2: req.body.address2,
       city: req.body.city,
       state: req.body.state,
     };
-    const data = await BookingRooms(notes, req.transaction);
+    const userData = await UserBookings(userPayload, req.transaction);
+    notes.user_id = userData.id;
+    const bookingData = await BookingRooms(notes, req.transaction);
+    const data = {
+      user: userData,
+      booking: bookingData,
+    };
     return generalResponse(
       req,
       res,

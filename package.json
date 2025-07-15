@@ -11,7 +11,8 @@
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo:all",
     "seed:admin": "npx ts-node src/sequilizedir/seeders/admin.seeder.ts",
     "seed:hotel": "npx ts-node src/sequilizedir/seeders/hotelSetting.seeder.ts",
-    "seed:price": "npx ts-node src/sequilizedir/seeders/roomPriceRules.seeder.ts"
+    "seed:price": "npx ts-node src/sequilizedir/seeders/roomPriceRules.seeder.ts",
+    "seed:all": "npm run seed:admin && npm run seed:hotel && npm run seed:price"
   },
   "keywords": [],
   "author": "",
