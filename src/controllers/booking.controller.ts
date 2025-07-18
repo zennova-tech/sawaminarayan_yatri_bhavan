@@ -156,7 +156,7 @@ const razorpayWebhook = async (req: Request, res: Response) => {
           state: notes.state,
         };
         const userData = await UserBookings(userPayload, req.transaction);
-        notes.user_id = userData.id;
+        bookingNotes.user_id = userData.id;
         await BookingRooms(bookingNotes, req.transaction);
         await sendWhatsAppMessage(notes.phone_number, notes);
         return generalResponse(
