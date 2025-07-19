@@ -100,33 +100,37 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
 };
 
 export const whatsAppVerification = async (req: Request, res: Response) => {
-  const mode = req.query['hub.mode'];
-  const token = req.query['hub.verify_token'];
-  const challenge = req.query['hub.challenge'];
+  try {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
 
-  // Your verify token (set this in Facebook)
+    // Your verify token (set this in Facebook)
 
-  if (mode && token) {
-    if (mode === 'subscribe' && token === WHATSAPP_WEBHOOK_TOKEN) {
-      console.log('Webhook verified successfully!');
-      return generalResponse(
-        req,
-        res,
-        challenge,
-        'Webhook verified successfully!',
-        false
-      );
-    } else {
-      return generalResponse(
-        req,
-        res,
-        null,
-        'Webhook secret not configured',
-        false,
-        'error',
-        403
-      );
+    if (mode && token) {
+      if (mode === 'subscribe' && token === WHATSAPP_WEBHOOK_TOKEN) {
+        console.log('Webhook verified successfully!');
+        return generalResponse(
+          req,
+          res,
+          challenge,
+          'Webhook verified successfully!',
+          false
+        );
+      } else {
+        return generalResponse(
+          req,
+          res,
+          null,
+          'Webhook secret not configured',
+          false,
+          'error',
+          403
+        );
+      }
     }
+  } catch (error) {
+    console.log('🚀 ~ whatsAppVerification ~ error:', error);
   }
 };
 
