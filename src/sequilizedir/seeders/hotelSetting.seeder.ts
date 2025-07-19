@@ -10,7 +10,7 @@ const seedHotelSettings = async () => {
       booked_rooms: 0,
       under_maintenance_rooms: 0,
       room_amount: 1500.0,
-      room_capacity: 3,
+      room_capacity: 5,
       mattress_amount: 300.0,
       check_in_time: '12:00:00',
       check_out_time: '10:00:00',
