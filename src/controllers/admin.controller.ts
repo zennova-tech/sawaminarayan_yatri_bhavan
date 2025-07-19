@@ -1,23 +1,25 @@
 import {
   bookingPayload,
   usersPayload,
-} from "@/interfaces/types/bookingInterfaces";
+} from '@/interfaces/types/bookingInterfaces';
 import {
   BookingRooms,
   deleteBookingData,
   fetchBookingsData,
   UserBookings,
-} from "@/repository/booking.repository";
+} from '@/repository/booking.repository';
 import {
   createPriceRule,
   deletePriceRuleData,
   fetchPriceRuleData,
+  findOverlappingDateRule,
+  findPriceRuleByName,
   updatePriceRuleData,
-} from "@/repository/priceRules.repository";
-import Booking from "@/sequilizedir/models/booking.model";
-import { IRoomPriceRules } from "@/sequilizedir/models/roomPriceRules.model";
-import { generalResponse } from "@/utils/generalResponse";
-import { Request, Response } from "express";
+} from '@/repository/priceRules.repository';
+import Booking from '@/sequilizedir/models/booking.model';
+import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
+import { generalResponse } from '@/utils/generalResponse';
+import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
   const { checkInDate } = req.query;
@@ -29,7 +31,7 @@ const AdminDashboard = async (req: Request, res: Response) => {
       req,
       res,
       bookings,
-      "Booking List fetched successfully",
+      'Booking List fetched successfully',
       false
     );
   } catch (error) {
@@ -37,9 +39,9 @@ const AdminDashboard = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to fetch booking list",
+      'Failed to fetch booking list',
       false,
-      "error",
+      'error',
       500
     );
   }
@@ -52,7 +54,7 @@ const DeleteBooking = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      "Booking deleted successfully",
+      'Booking deleted successfully',
       false
     );
   } catch (error) {
@@ -60,9 +62,9 @@ const DeleteBooking = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to delete booking",
+      'Failed to delete booking',
       false,
-      "error",
+      'error',
       500
     );
   }
@@ -99,7 +101,7 @@ const createBooking = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      "Booking created successfully",
+      'Booking created successfully',
       false
     );
   } catch (error) {
@@ -107,9 +109,9 @@ const createBooking = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to create booking",
+      'Failed to create booking',
       false,
-      "error",
+      'error',
       500
     );
   }
@@ -122,14 +124,43 @@ const createRoomRule = async (req: Request, res: Response) => {
       start_date: req.body.start_date,
       end_date: req.body.end_date,
       price_per_night: req.body.price_per_night,
-      is_default_price: false
+      is_default_price: false,
     };
+
+    // Check for duplicate rule name
+    const existingRule = await findPriceRuleByName(payload.name);
+    if (existingRule) {
+      return generalResponse(
+        req,
+        res,
+        null,
+        'A rule with this name already exists.',
+        false,
+        'error',
+        400
+      );
+    }
+
+    // Check for overlapping date range
+    const overlappingRules = await findOverlappingDateRule(payload.start_date, payload.end_date);
+    if (overlappingRules) {
+      return generalResponse(
+        req,
+        res,
+        null,
+        'A price rule already exists for the given date range.',
+        false,
+        'error',
+        400
+      );
+    }
+
     const data = await createPriceRule(payload);
     return generalResponse(
       req,
       res,
       data,
-      "Room rule created successfully",
+      'Room rule created successfully',
       false
     );
   } catch (error) {
@@ -137,9 +168,9 @@ const createRoomRule = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to create price rule",
+      'Failed to create price rule',
       false,
-      "error",
+      'error',
       500
     );
   }
@@ -152,7 +183,7 @@ const DeleteRoomRule = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      "Room rule deleted successfully",
+      'Room rule deleted successfully',
       false
     );
   } catch (error) {
@@ -160,9 +191,9 @@ const DeleteRoomRule = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to delete room rule",
+      'Failed to delete room rule',
       false,
-      "error",
+      'error',
       500
     );
   }
@@ -178,12 +209,41 @@ const updateRoomRule = async (req: Request, res: Response) => {
       price_per_night: req.body.price_per_night,
       is_default_price: req.body.is_default_price,
     };
+
+     // Check for duplicate rule name
+    const existingRule = await findPriceRuleByName(payload.name, id);
+    if (existingRule) {
+      return generalResponse(
+        req,
+        res,
+        null,
+        'A rule with this name already exists.',
+        false,
+        'error',
+        400
+      );
+    }
+
+    // Check for overlapping date range
+    const overlappingRules = await findOverlappingDateRule(payload.start_date, payload.end_date, id);
+    if (overlappingRules) {
+      return generalResponse(
+        req,
+        res,
+        null,
+        'A price rule already exists for the given date range.',
+        false,
+        'error',
+        400
+      );
+    }
+    
     const data = await updatePriceRuleData(id, payload);
     return generalResponse(
       req,
       res,
       data,
-      "Room rule updated successfully",
+      'Room rule updated successfully',
       false
     );
   } catch (error) {
@@ -191,9 +251,9 @@ const updateRoomRule = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to update room rule",
+      'Failed to update room rule',
       false,
-      "error",
+      'error',
       500
     );
   }
@@ -206,7 +266,7 @@ const PriceRules = async (req: Request, res: Response) => {
       req,
       res,
       data,
-      "Booking List fetched successfully",
+      'Price rule List fetched successfully',
       false
     );
   } catch (error) {
@@ -214,9 +274,9 @@ const PriceRules = async (req: Request, res: Response) => {
       req,
       res,
       error,
-      "Failed to fetch price rule list",
+      'Failed to fetch price rule list',
       false,
-      "error",
+      'error',
       500
     );
   }
