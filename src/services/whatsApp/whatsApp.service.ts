@@ -73,7 +73,7 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
               { type: 'text', text: data.rooms.toString() }, // Ensure string
               {
                 type: 'text',
-                text: (data.rooms * data.guest_per_room).toString(),
+                text: (data.rooms * data.total_guests).toString(),
               },
               { type: 'text', text: data.mattress.toString() },
               { type: 'text', text: data.amount.toString() },

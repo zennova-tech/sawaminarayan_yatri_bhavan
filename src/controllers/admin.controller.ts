@@ -4,6 +4,7 @@ import {
 } from '@/interfaces/types/bookingInterfaces';
 import {
   BookingRooms,
+  cancelBookingData,
   deleteBookingData,
   fetchBookingsData,
   UserBookings,
@@ -11,6 +12,8 @@ import {
 import {
   createPriceRule,
   deletePriceRuleData,
+  fetchDefaultPriceRule,
+  findPriceRuleByDate,
   fetchPriceRuleData,
   findOverlappingDateRule,
   findPriceRuleByName,
@@ -19,6 +22,7 @@ import {
 import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
+import { eachDayOfInterval } from 'date-fns';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
@@ -72,23 +76,24 @@ const DeleteBooking = async (req: Request, res: Response) => {
 
 const createBooking = async (req: Request, res: Response) => {
   try {
+    const { check_in, check_out, rooms, total_guests, mattress, amount, first_name, last_name, phone_number, email, address1, address2, city, state } = req.body;
     const notes: bookingPayload = {
-      check_in: req.body.check_in,
-      check_out: req.body.check_out,
-      rooms: req.body.rooms,
-      guest_per_room: req.body.guest_per_room,
-      mattress: req.body.mattress,
-      amount: req.body.amount,
+      check_in,
+      check_out,
+      rooms,
+      total_guests,
+      mattress,
+      amount,
     };
     const userPayload: usersPayload = {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      phone_number: req.body.phone_number,
-      email: req.body.email,
-      address1: req.body.address1,
-      address2: req.body.address2,
-      city: req.body.city,
-      state: req.body.state,
+      first_name,
+      last_name,
+      phone_number,
+      email,
+      address1,
+      address2,
+      city,
+      state,
     };
     const userData = await UserBookings(userPayload, req.transaction);
     notes.user_id = userData.id;
@@ -116,6 +121,78 @@ const createBooking = async (req: Request, res: Response) => {
     );
   }
 };
+
+const updateBooking = async (req: Request, res: Response) => {
+  try {
+    const {   check_in, check_out, rooms, total_guests, mattress, amount, first_name, last_name, phone_number, email, address1, address2, city, state } = req.body;
+    const notes: bookingPayload = {
+      id: req.params.id,
+      check_in,
+      check_out,
+      rooms,
+      total_guests,
+      mattress,
+      amount,
+    };
+    const userPayload: usersPayload = {
+      first_name,
+      last_name,
+      phone_number,
+      email,
+      address1,
+      address2,
+      city,
+      state,
+    };
+    const userData = await UserBookings(userPayload, req.transaction);
+    notes.user_id = userData.id;
+    const bookingData = await BookingRooms(notes, req.transaction);
+    const data = {
+      user: userData,
+      booking: bookingData,
+    };
+    return generalResponse(
+      req,
+      res,
+      data,
+      'Booking created successfully',
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      'Failed to create booking',
+      false,
+      'error',
+      500
+    );
+  }
+};
+
+const cancelBooking = async (req: Request, res: Response) => {  
+  try {
+    const data = await cancelBookingData(String(req.params.id));
+    return generalResponse(
+      req,
+      res,
+      data,
+      'Booking cancelled successfully',
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      'Failed to cancel booking',
+      false,
+      'error',
+      500
+    );
+  }
+} 
 
 const createRoomRule = async (req: Request, res: Response) => {
   try {
@@ -261,7 +338,8 @@ const updateRoomRule = async (req: Request, res: Response) => {
 
 const PriceRules = async (req: Request, res: Response) => {
   try {
-    const data = await fetchPriceRuleData();
+    const { checkInDate } = req.query;
+    const data = await fetchPriceRuleData(checkInDate as string);
     return generalResponse(
       req,
       res,
@@ -282,6 +360,55 @@ const PriceRules = async (req: Request, res: Response) => {
   }
 };
 
+const calculatePrice = async (req: Request, res: Response) => {
+  try {
+    const { check_in, check_out, total_rooms } = req.query;
+    const checkInDate = new Date(check_in as string);
+    const checkOutDate = new Date(check_out as string);
+    const totalRooms = parseInt(total_rooms as string);
+
+    // spread all the dates between check_in and check_out and find out all the price rules for that particular date, if no price rule then use default price rule, and based on the number of roms calculate the total price per day and also the final price 
+    let totalPrice = 0;
+    const metadata = [];
+    const defaultPriceRule = await fetchDefaultPriceRule();
+    for(const date of eachDayOfInterval({start: checkInDate, end: checkOutDate})) {
+      const priceRule = await findPriceRuleByDate(date);
+      let price = 0;
+      if(priceRule) {
+        price = priceRule.price_per_night * totalRooms;
+      } else {
+        price = defaultPriceRule?.price_per_night * totalRooms;
+      }
+      totalPrice += price;
+      metadata.push({
+        date,
+        price
+      });
+    }
+
+    return generalResponse(
+      req,
+      res,
+      {
+        totalPrice,
+        metadata
+      },
+      'Price calculated successfully',
+      false
+    );
+  } catch (error) {
+    return generalResponse(
+      req,
+      res,
+      error,
+      'Failed to calculate price',
+      false,
+      'error',
+      500
+    );
+  }
+}
+
 export {
   AdminDashboard,
   createBooking,
@@ -290,4 +417,7 @@ export {
   DeleteRoomRule,
   updateRoomRule,
   PriceRules,
+  calculatePrice,
+  updateBooking,
+  cancelBooking
 };

@@ -1,16 +1,19 @@
 import {
   AdminDashboard,
+  cancelBooking,
   createBooking,
   createRoomRule,
   DeleteBooking,
   DeleteRoomRule,
   PriceRules,
+  updateBooking,
   updateRoomRule,
 } from "@/controllers/admin.controller";
 import { authMiddleware } from "@/middleware/auth";
 import validationMiddleware from "@/middleware/validation";
 import {
   bookingSchema,
+  cancelBookingSchema,
   checkInDateSchema,
   deleteBookingSchema,
   deleteRoomRuleSchema,
@@ -39,6 +42,20 @@ router.post(
   authMiddleware,
   validationMiddleware(bookingSchema, "body"),
   createBooking
+);
+
+router.put(
+  "/booking/:id",
+  authMiddleware,
+  validationMiddleware(bookingSchema, "body"),
+  updateBooking
+);
+
+router.put(
+  "/booking/:id/cancel",
+  authMiddleware,
+  validationMiddleware(cancelBookingSchema, "params"),
+  cancelBooking
 );
 
 router.get(

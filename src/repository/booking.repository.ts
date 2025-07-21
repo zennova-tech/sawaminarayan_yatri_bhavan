@@ -32,7 +32,7 @@ const fetchBookingsData = async (checkInDate?: string) => {
       'check_in',
       'check_out',
       'rooms_booked',
-      'guests_per_room',
+      'total_guests',
       'extra_mattresses',
       'total_amount',
     ],
@@ -49,6 +49,11 @@ const fetchBookingsData = async (checkInDate?: string) => {
             'name',
           ],
           'phone_number',
+          'email',
+          ['address_line_1', 'address1'],
+          ['address_line_2', 'address2'],
+          'city',
+          'state',
         ],
       },
     ],
@@ -65,7 +70,7 @@ const BookingRooms = async (
     check_in: data.check_in,
     check_out: data.check_out,
     rooms_booked: data.rooms,
-    guests_per_room: data.guest_per_room,
+    total_guests: data.total_guests,
     extra_mattresses: data.mattress,
     total_amount: data.amount,
     payment_id,
@@ -73,13 +78,17 @@ const BookingRooms = async (
     user_id: data.user_id,
   };
   const hotelSettings = await HotelSettings.findOne({ transaction });
-  hotelSettings.booked_rooms = (hotelSettings.booked_rooms || 0) + data.rooms;
-  hotelSettings.available_rooms =
-    (hotelSettings.available_rooms || 0) - data.rooms;
-  if (hotelSettings.available_rooms < 0) {
+  if ((hotelSettings.available_rooms || 0) - data.rooms < 0) {
     throw new Error('Not enough available rooms');
   }
-  await hotelSettings.save({ transaction });
+  await HotelSettings.update({
+    booked_rooms: (hotelSettings.booked_rooms || 0) + data.rooms,
+    available_rooms: (hotelSettings.available_rooms || 0) - data.rooms,
+  }, { where: { id: hotelSettings.id }, transaction });
+  if (data.id) {
+    await Booking.update(bookingPayload, { where: { id: data.id }, transaction });
+    return await Booking.findOne({ where: { id: data.id }, transaction });
+  }
   return await Booking.create(bookingPayload, { transaction });
 };
 
@@ -128,6 +137,10 @@ const getAvailableRooms = async (checkInDate: Date, checkOutDate: Date) => {
   return availableRooms > 0 ? availableRooms : 0;
 };
 
+const cancelBookingData = async (id: string) => {
+  return await Booking.update({ status: 'cancelled' }, { where: { id } });
+};
+
 export {
   UserBookings,
   BookingRooms,
@@ -135,4 +148,5 @@ export {
   fetchBookingsData,
   hotelDetails,
   getAvailableRooms,
+  cancelBookingData,
 };

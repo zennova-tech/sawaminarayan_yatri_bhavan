@@ -18,7 +18,7 @@ module.exports = {
           check_in: { type: Sequelize.DATE, allowNull: false },
           check_out: { type: Sequelize.DATE, allowNull: false },
           rooms_booked: { type: Sequelize.INTEGER, allowNull: false },
-          guests_per_room: { type: Sequelize.INTEGER, allowNull: false },
+          total_guests: { type: Sequelize.INTEGER, allowNull: false },
           extra_mattresses: {
             type: Sequelize.INTEGER,
             allowNull: true,
@@ -36,6 +36,11 @@ module.exports = {
             type: Sequelize.STRING,
             allowNull: false,
             default: "SYSTEM",
+          },
+          status: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            default: "pending",
           },
           created_at: {
             type: Sequelize.DATE,

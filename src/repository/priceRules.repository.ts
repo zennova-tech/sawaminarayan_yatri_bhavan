@@ -17,8 +17,13 @@ const deletePriceRuleData = async (id: string) => {
   });
 };
 
-const fetchPriceRuleData = async () => {
-  return await RoomPriceRules.findAll();
+const fetchPriceRuleData = async (checkInDate?: string) => {
+  return await RoomPriceRules.findAll({
+    where: checkInDate ? {
+      start_date: { [Op.lte]: checkInDate },
+      end_date: { [Op.gte]: checkInDate },
+    } : {},
+  });
 };
 
 const findPriceRuleByName = async (name: string, id?: string) => {
@@ -59,6 +64,19 @@ const findOverlappingDateRule = async (
   });
 };
 
+const fetchDefaultPriceRule = async () => {
+  return await RoomPriceRules.findOne({
+    where: { is_default_price: true },
+  });
+};
+
+const findPriceRuleByDate = async (date: Date) => {
+  return await RoomPriceRules.findOne({
+    where: { start_date: { [Op.lte]: date }, end_date: { [Op.gte]: date }, is_default_price: false },
+  });
+};
+
+
 export {
   createPriceRule,
   deletePriceRuleData,
@@ -66,4 +84,6 @@ export {
   fetchPriceRuleData,
   findPriceRuleByName,
   findOverlappingDateRule,
+  fetchDefaultPriceRule,
+  findPriceRuleByDate
 };
