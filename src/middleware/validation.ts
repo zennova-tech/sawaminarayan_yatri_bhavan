@@ -22,7 +22,7 @@ const errorFilterValidator = (error: Array<ErrorType>): string => {
 
 const validationMiddleware = (
   schema: any,
-  source: 'body' | 'query' | 'params' = 'body'
+  source: 'body' | 'query' | 'params' = 'body',
 ): RequestHandler => {
   return async (req, res, next) => {
     try {
@@ -37,15 +37,7 @@ const validationMiddleware = (
 
       if (error.details) {
         const errorResponse = errorFilterValidator(error.details);
-        return generalResponse(
-          req,
-          res,
-          errorResponse,
-          'VALIDATION_ERROR',
-          true,
-          'error',
-          400
-        );
+        return generalResponse(req, res, errorResponse, 'VALIDATION_ERROR', true, 'error', 400);
       }
 
       return generalResponse(req, res, error.message, 'SOMETHING_WRONG', true, 'error', 400);

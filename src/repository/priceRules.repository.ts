@@ -1,6 +1,4 @@
-import RoomPriceRules, {
-  IRoomPriceRules,
-} from '@/sequilizedir/models/roomPriceRules.model';
+import RoomPriceRules, { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { Op } from 'sequelize';
 
 const createPriceRule = async (data: IRoomPriceRules) => {
@@ -19,10 +17,12 @@ const deletePriceRuleData = async (id: string) => {
 
 const fetchPriceRuleData = async (checkInDate?: string) => {
   return await RoomPriceRules.findAll({
-    where: checkInDate ? {
-      start_date: { [Op.lte]: checkInDate },
-      end_date: { [Op.gte]: checkInDate },
-    } : {},
+    where: checkInDate
+      ? {
+          start_date: { [Op.lte]: checkInDate },
+          end_date: { [Op.gte]: checkInDate },
+        }
+      : {},
   });
 };
 
@@ -44,7 +44,7 @@ const findPriceRuleByName = async (name: string, id?: string) => {
 const findOverlappingDateRule = async (
   startDate: string | Date,
   endDate: string | Date,
-  id?: string
+  id?: string,
 ) => {
   return await RoomPriceRules.findOne({
     where: {
@@ -56,10 +56,7 @@ const findOverlappingDateRule = async (
             },
           }
         : {}),
-      [Op.and]: [
-        { start_date: { [Op.lte]: endDate } },
-        { end_date: { [Op.gte]: startDate } },
-      ],
+      [Op.and]: [{ start_date: { [Op.lte]: endDate } }, { end_date: { [Op.gte]: startDate } }],
     },
   });
 };
@@ -72,10 +69,13 @@ const fetchDefaultPriceRule = async () => {
 
 const findPriceRuleByDate = async (date: Date) => {
   return await RoomPriceRules.findOne({
-    where: { start_date: { [Op.lte]: date }, end_date: { [Op.gte]: date }, is_default_price: false },
+    where: {
+      start_date: { [Op.lte]: date },
+      end_date: { [Op.gte]: date },
+      is_default_price: false,
+    },
   });
 };
-
 
 export {
   createPriceRule,
@@ -85,5 +85,5 @@ export {
   findPriceRuleByName,
   findOverlappingDateRule,
   fetchDefaultPriceRule,
-  findPriceRuleByDate
+  findPriceRuleByDate,
 };

@@ -24,17 +24,12 @@ router.put('/hotel-settings', HotelSettingUpdate);
 router.get('/available-rooms', getAvailableRoomsController);
 
 router.get(
-  "/price-rule/calculate",
-  validationMiddleware(calculatePriceSchema, "query"),
-  calculatePrice
-
-)
+  '/price-rule/calculate',
+  validationMiddleware(calculatePriceSchema, 'query'),
+  calculatePrice,
+);
 
 // Webhook route with raw body handling
-router.post(
-  '/webhook',
-  express.raw({ type: 'application/json' }),
-  razorpayWebhook
-);
+router.post('/webhook', express.raw({ type: 'application/json' }), razorpayWebhook);
 
 export default router;

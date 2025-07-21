@@ -10,9 +10,9 @@ module.exports = {
         {
           type: Sequelize.TIME,
           allowNull: false,
-          defaultValue: '10:00:00'
+          defaultValue: '10:00:00',
         },
-        { transaction: t }
+        { transaction: t },
       );
       await queryInterface.addColumn(
         'hotel_settings',
@@ -20,9 +20,9 @@ module.exports = {
         {
           type: Sequelize.TIME,
           allowNull: false,
-          defaultValue: '09:00:00'
+          defaultValue: '09:00:00',
         },
-        { transaction: t }
+        { transaction: t },
       );
     });
   },

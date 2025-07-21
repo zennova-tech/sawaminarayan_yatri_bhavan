@@ -1,7 +1,4 @@
-import {
-  bookingPayload,
-  usersPayload,
-} from '@/interfaces/types/bookingInterfaces';
+import { bookingPayload, usersPayload } from '@/interfaces/types/bookingInterfaces';
 import Booking, { IBooking } from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import Users from '@/sequilizedir/models/users.model';
@@ -44,10 +41,7 @@ const fetchBookingsData = async (checkInDate?: string) => {
         model: Users,
         as: 'users',
         attributes: [
-          [
-            literal(`CONCAT("users"."first_name", ' ', "users"."last_name")`),
-            'name',
-          ],
+          [literal(`CONCAT("users"."first_name", ' ', "users"."last_name")`), 'name'],
           'phone_number',
           'email',
           ['address_line_1', 'address1'],
@@ -64,7 +58,7 @@ const BookingRooms = async (
   data: bookingPayload,
   transaction: Transaction,
   payment_id?: string,
-  method?: string
+  method?: string,
 ) => {
   const bookingPayload: IBooking = {
     check_in: data.check_in,
@@ -81,10 +75,13 @@ const BookingRooms = async (
   if ((hotelSettings.available_rooms || 0) - data.rooms < 0) {
     throw new Error('Not enough available rooms');
   }
-  await HotelSettings.update({
-    booked_rooms: (hotelSettings.booked_rooms || 0) + data.rooms,
-    available_rooms: (hotelSettings.available_rooms || 0) - data.rooms,
-  }, { where: { id: hotelSettings.id }, transaction });
+  await HotelSettings.update(
+    {
+      booked_rooms: (hotelSettings.booked_rooms || 0) + data.rooms,
+      available_rooms: (hotelSettings.available_rooms || 0) - data.rooms,
+    },
+    { where: { id: hotelSettings.id }, transaction },
+  );
   if (data.id) {
     await Booking.update(bookingPayload, { where: { id: data.id }, transaction });
     return await Booking.findOne({ where: { id: data.id }, transaction });
@@ -122,17 +119,12 @@ const getAvailableRooms = async (checkInDate: Date, checkOutDate: Date) => {
   });
 
   // Sum up rooms booked in these bookings
-  const roomsBooked = overlappingBookings.reduce(
-    (sum, booking) => sum + booking.rooms_booked,
-    0
-  );
+  const roomsBooked = overlappingBookings.reduce((sum, booking) => sum + booking.rooms_booked, 0);
 
   const hotelSettingData = await HotelSettings.findOne();
 
   const availableRooms =
-    hotelSettingData.total_rooms -
-    hotelSettingData.under_maintenance_rooms -
-    roomsBooked;
+    hotelSettingData.total_rooms - hotelSettingData.under_maintenance_rooms - roomsBooked;
 
   return availableRooms > 0 ? availableRooms : 0;
 };

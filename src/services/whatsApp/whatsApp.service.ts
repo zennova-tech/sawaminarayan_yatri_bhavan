@@ -14,10 +14,7 @@ import * as fs from 'fs';
 
 const uploadMedia = async () => {
   const formData = new FormData();
-  formData.append(
-    'file',
-    fs.createReadStream('src/assets/whatsapp_banner.jpeg')
-  );
+  formData.append('file', fs.createReadStream('src/assets/whatsapp_banner.jpeg'));
   formData.append('type', 'image/jpeg');
   formData.append('messaging_product', 'whatsapp');
 
@@ -29,7 +26,7 @@ const uploadMedia = async () => {
         Authorization: `Bearer ${WHATSAPP_TOKEN}`,
         'Content-Type': 'multipart/form-data',
       },
-    }
+    },
   );
   return response.data.id;
 };
@@ -109,23 +106,9 @@ export const whatsAppVerification = async (req: Request, res: Response) => {
   if (mode && token) {
     if (mode === 'subscribe' && token === WHATSAPP_WEBHOOK_TOKEN) {
       console.log('Webhook verified successfully!');
-      return generalResponse(
-        req,
-        res,
-        challenge,
-        'Webhook verified successfully!',
-        false
-      );
+      return generalResponse(req, res, challenge, 'Webhook verified successfully!', false);
     } else {
-      return generalResponse(
-        req,
-        res,
-        null,
-        'Webhook secret not configured',
-        false,
-        'error',
-        403
-      );
+      return generalResponse(req, res, null, 'Webhook secret not configured', false, 'error', 403);
     }
   }
 };
@@ -150,7 +133,7 @@ export const whatsAppStatus = async (req: Request, res: Response) => {
           errors: status.errors || 'No errors',
         },
         'Message Status Update',
-        false
+        false,
       );
     }
 

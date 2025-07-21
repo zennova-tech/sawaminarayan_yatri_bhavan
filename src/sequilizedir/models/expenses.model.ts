@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import { Optional } from 'sequelize';
 import {
   Table,
   Model,
@@ -10,7 +10,7 @@ import {
   CreatedAt,
   UpdatedAt,
   DeletedAt,
-} from "sequelize-typescript";
+} from 'sequelize-typescript';
 
 export interface IExpenses {
   id: string;
@@ -23,10 +23,10 @@ export interface IExpenses {
   deleted_at: Date;
 }
 
-interface ICreateExpenseAttribute extends Optional<IExpenses, "id"> {}
+interface ICreateExpenseAttribute extends Optional<IExpenses, 'id'> {}
 
 @Table({
-  tableName: "expenses",
+  tableName: 'expenses',
   timestamps: true,
   paranoid: true,
 })
@@ -53,15 +53,15 @@ class Expenses extends Model<IExpenses, ICreateExpenseAttribute> {
   notes: string;
 
   @CreatedAt
-  @Column({ field: "created_at" })
+  @Column({ field: 'created_at' })
   created_at: Date;
 
   @UpdatedAt
-  @Column({ field: "updated_at" })
+  @Column({ field: 'updated_at' })
   updated_at: Date;
 
   @DeletedAt
-  @Column({ field: "deleted_at" })
+  @Column({ field: 'deleted_at' })
   deleted_at: Date;
 }
 

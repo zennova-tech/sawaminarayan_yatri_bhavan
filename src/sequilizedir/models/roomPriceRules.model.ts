@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import { Optional } from 'sequelize';
 import {
   Table,
   Model,
@@ -10,7 +10,7 @@ import {
   CreatedAt,
   UpdatedAt,
   DeletedAt,
-} from "sequelize-typescript";
+} from 'sequelize-typescript';
 
 export interface IRoomPriceRules {
   id?: string;
@@ -24,18 +24,14 @@ export interface IRoomPriceRules {
   deleted_at?: Date;
 }
 
-interface ICreateRoomPriceRulesAttribute
-  extends Optional<IRoomPriceRules, "id"> {}
+interface ICreateRoomPriceRulesAttribute extends Optional<IRoomPriceRules, 'id'> {}
 
 @Table({
-  tableName: "room_price_rules",
+  tableName: 'room_price_rules',
   timestamps: true,
   paranoid: true,
 })
-class RoomPriceRules extends Model<
-  IRoomPriceRules,
-  ICreateRoomPriceRulesAttribute
-> {
+class RoomPriceRules extends Model<IRoomPriceRules, ICreateRoomPriceRulesAttribute> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
@@ -62,15 +58,15 @@ class RoomPriceRules extends Model<
   is_default_price: boolean;
 
   @CreatedAt
-  @Column({ field: "created_at" })
+  @Column({ field: 'created_at' })
   created_at: Date;
 
   @UpdatedAt
-  @Column({ field: "updated_at" })
+  @Column({ field: 'updated_at' })
   updated_at: Date;
 
   @DeletedAt
-  @Column({ field: "deleted_at" })
+  @Column({ field: 'deleted_at' })
   deleted_at: Date;
 }
 

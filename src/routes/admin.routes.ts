@@ -8,9 +8,9 @@ import {
   PriceRules,
   updateBooking,
   updateRoomRule,
-} from "@/controllers/admin.controller";
-import { authMiddleware } from "@/middleware/auth";
-import validationMiddleware from "@/middleware/validation";
+} from '@/controllers/admin.controller';
+import { authMiddleware } from '@/middleware/auth';
+import validationMiddleware from '@/middleware/validation';
 import {
   bookingSchema,
   cancelBookingSchema,
@@ -18,71 +18,62 @@ import {
   deleteBookingSchema,
   deleteRoomRuleSchema,
   roomRuleSchema,
-} from "@/validationSchema/checkInDateSchema";
-import express, { Router } from "express";
+} from '@/validationSchema/checkInDateSchema';
+import express, { Router } from 'express';
 
 const router: Router = express.Router();
 
 router.get(
-  "/dashboard",
+  '/dashboard',
   authMiddleware,
-  validationMiddleware(checkInDateSchema, "query"),
-  AdminDashboard
+  validationMiddleware(checkInDateSchema, 'query'),
+  AdminDashboard,
 );
 
 router.delete(
-  "/booking",
+  '/booking',
   authMiddleware,
-  validationMiddleware(deleteBookingSchema, "query"),
-  DeleteBooking
+  validationMiddleware(deleteBookingSchema, 'query'),
+  DeleteBooking,
 );
+
+router.post('/booking', authMiddleware, validationMiddleware(bookingSchema, 'body'), createBooking);
+
+router.put(
+  '/booking/:id',
+  authMiddleware,
+  validationMiddleware(bookingSchema, 'body'),
+  updateBooking,
+);
+
+router.put(
+  '/booking/:id/cancel',
+  authMiddleware,
+  validationMiddleware(cancelBookingSchema, 'params'),
+  cancelBooking,
+);
+
+router.get('/price-rule', authMiddleware, PriceRules);
 
 router.post(
-  "/booking",
+  '/price-rule',
   authMiddleware,
-  validationMiddleware(bookingSchema, "body"),
-  createBooking
+  validationMiddleware(roomRuleSchema, 'body'),
+  createRoomRule,
 );
 
 router.put(
-  "/booking/:id",
+  '/price-rule/:id',
   authMiddleware,
-  validationMiddleware(bookingSchema, "body"),
-  updateBooking
-);
-
-router.put(
-  "/booking/:id/cancel",
-  authMiddleware,
-  validationMiddleware(cancelBookingSchema, "params"),
-  cancelBooking
-);
-
-router.get(
-  "/price-rule",
-  authMiddleware,
-  PriceRules
-);
-
-router.post(
-  "/price-rule",
-  authMiddleware,
-  validationMiddleware(roomRuleSchema, "body"),
-  createRoomRule
-);
-
-router.put(
-  "/price-rule/:id",
-  authMiddleware,
-  validationMiddleware(roomRuleSchema, "body"),
-  updateRoomRule
+  validationMiddleware(roomRuleSchema, 'body'),
+  updateRoomRule,
 );
 
 router.delete(
-  "/price-rule",
+  '/price-rule',
   authMiddleware,
-  validationMiddleware(deleteRoomRuleSchema, "query"),
-  DeleteRoomRule
+  validationMiddleware(deleteRoomRuleSchema, 'query'),
+  DeleteRoomRule,
 );
 
 export default router;

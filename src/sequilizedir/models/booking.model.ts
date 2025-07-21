@@ -11,9 +11,9 @@ import {
   DeletedAt,
   ForeignKey,
   BelongsTo,
-} from "sequelize-typescript";
-import { Optional } from "sequelize";
-import Users from "./users.model";
+} from 'sequelize-typescript';
+import { Optional } from 'sequelize';
+import Users from './users.model';
 
 export interface IBooking {
   id?: string;
@@ -33,10 +33,10 @@ export interface IBooking {
   deleted_at?: Date;
 }
 
-interface ICreateBookingAttributes extends Optional<IBooking, "id"> {}
+interface ICreateBookingAttributes extends Optional<IBooking, 'id'> {}
 
 @Table({
-  tableName: "bookings",
+  tableName: 'bookings',
   timestamps: true,
   paranoid: true,
 })
@@ -84,28 +84,28 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   user_id: string;
 
   @AllowNull(false)
-  @Default("SYSTEM")
+  @Default('SYSTEM')
   @Column(DataType.STRING)
   created_by: string;
 
   @AllowNull(false)
-  @Default("pending")
+  @Default('pending')
   @Column(DataType.STRING)
   status: string;
 
   @CreatedAt
-  @Column({ field: "created_at" })
+  @Column({ field: 'created_at' })
   created_at: Date;
 
   @UpdatedAt
-  @Column({ field: "updated_at" })
+  @Column({ field: 'updated_at' })
   updated_at: Date;
 
   @DeletedAt
-  @Column({ field: "deleted_at" })
+  @Column({ field: 'deleted_at' })
   deleted_at: Date;
 
-  @BelongsTo(() => Users, { as: "users" })
+  @BelongsTo(() => Users, { as: 'users' })
   user: Users;
 }
 

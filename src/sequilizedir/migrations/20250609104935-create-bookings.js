@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-const { ref } = require("joi");
+const { ref } = require('joi');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
       await queryInterface.createTable(
-        "bookings",
+        'bookings',
         {
           id: {
             type: Sequelize.UUID,
@@ -27,7 +27,7 @@ module.exports = {
           user_id: {
             type: Sequelize.UUID,
             allowNull: false,
-            references: { model: "users", key: "id" },
+            references: { model: 'users', key: 'id' },
           },
           total_amount: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
           payment_id: { type: Sequelize.UUID, allowNull: true },
@@ -35,12 +35,12 @@ module.exports = {
           created_by: {
             type: Sequelize.STRING,
             allowNull: false,
-            default: "SYSTEM",
+            default: 'SYSTEM',
           },
           status: {
             type: Sequelize.STRING,
             allowNull: false,
-            default: "pending",
+            default: 'pending',
           },
           created_at: {
             type: Sequelize.DATE,
@@ -50,14 +50,14 @@ module.exports = {
           updated_at: { type: Sequelize.DATE },
           deleted_at: { type: Sequelize.DATE },
         },
-        { transaction: t }
+        { transaction: t },
       );
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
-      await queryInterface.dropTable("bookings", {
+      await queryInterface.dropTable('bookings', {
         transaction: t,
         cascade: true,
       });

@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
       await queryInterface.createTable(
-        "hotel_settings",
+        'hotel_settings',
         {
           id: {
             type: Sequelize.UUID,
@@ -19,7 +19,7 @@ module.exports = {
           under_maintenance_rooms: { type: Sequelize.INTEGER },
           room_amount: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
           room_capacity: { type: Sequelize.INTEGER, allowNull: false },
-          mattress_amount : { type: Sequelize.DECIMAL(6, 2), allowNull: false },
+          mattress_amount: { type: Sequelize.DECIMAL(6, 2), allowNull: false },
           created_at: {
             type: Sequelize.DATE,
             allowNull: false,
@@ -28,14 +28,14 @@ module.exports = {
           updated_at: { type: Sequelize.DATE },
           deleted_at: { type: Sequelize.DATE },
         },
-        { transaction: t }
+        { transaction: t },
       );
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
-      await queryInterface.dropTable("hotel_settings", {
+      await queryInterface.dropTable('hotel_settings', {
         transaction: t,
         cascade: true,
       });

@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import { Optional } from 'sequelize';
 import {
   Table,
   Model,
@@ -12,8 +12,8 @@ import {
   DeletedAt,
   ForeignKey,
   HasMany,
-} from "sequelize-typescript";
-import Booking from "./booking.model";
+} from 'sequelize-typescript';
+import Booking from './booking.model';
 
 export interface IUsers {
   id?: string;
@@ -30,10 +30,10 @@ export interface IUsers {
   pin_code: string;
 }
 
-interface ICreateAdminAttribute extends Optional<IUsers, "id"> {}
+interface ICreateAdminAttribute extends Optional<IUsers, 'id'> {}
 
 @Table({
-  tableName: "users",
+  tableName: 'users',
   timestamps: true,
   paranoid: true,
 })
@@ -86,15 +86,15 @@ class Users extends Model<IUsers, ICreateAdminAttribute> {
   password: string;
 
   @CreatedAt
-  @Column({ field: "created_at" })
+  @Column({ field: 'created_at' })
   created_at: Date;
 
   @UpdatedAt
-  @Column({ field: "updated_at" })
+  @Column({ field: 'updated_at' })
   updated_at: Date;
 
   @DeletedAt
-  @Column({ field: "deleted_at" })
+  @Column({ field: 'deleted_at' })
   deleted_at: Date;
 
   @HasMany(() => Booking)
