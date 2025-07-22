@@ -28,11 +28,23 @@ module.exports = {
         },
         { transaction: t },
       );
+      await queryInterface.addColumn(
+        'bookings',
+        'total_guests',
+        {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
+        { transaction: t }
+      );
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
+      await queryInterface.removeColumn('bookings', 'total_guests', {
+        transaction: t,
+      });
       await queryInterface.removeColumn('bookings', 'payment_id', {
         transaction: t,
       });

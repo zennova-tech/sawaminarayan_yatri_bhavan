@@ -79,6 +79,10 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @Column(DataType.STRING)
   payment_type: string;
 
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
+  total_guests: number;
+
   @ForeignKey(() => Users)
   @Column(DataType.UUID)
   user_id: string;
