@@ -9,8 +9,8 @@ import {
   CreatedAt,
   UpdatedAt,
   DeletedAt,
-} from "sequelize-typescript";
-import { Optional } from "sequelize";
+} from 'sequelize-typescript';
+import { Optional } from 'sequelize';
 
 export interface IHotelSettings {
   id: string;
@@ -28,18 +28,14 @@ export interface IHotelSettings {
   deleted_at: Date;
 }
 
-interface ICreateHotelSettingsAttributes
-  extends Optional<IHotelSettings, "id"> {}
+interface ICreateHotelSettingsAttributes extends Optional<IHotelSettings, 'id'> {}
 
 @Table({
-  tableName: "hotel_settings",
+  tableName: 'hotel_settings',
   timestamps: true,
   paranoid: true,
 })
-class HotelSettings extends Model<
-  IHotelSettings,
-  ICreateHotelSettingsAttributes
-> {
+class HotelSettings extends Model<IHotelSettings, ICreateHotelSettingsAttributes> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
@@ -82,15 +78,15 @@ class HotelSettings extends Model<
   check_out_time: string;
 
   @CreatedAt
-  @Column({ field: "created_at" })
+  @Column({ field: 'created_at' })
   created_at: Date;
 
   @UpdatedAt
-  @Column({ field: "updated_at" })
+  @Column({ field: 'updated_at' })
   updated_at: Date;
 
   @DeletedAt
-  @Column({ field: "deleted_at" })
+  @Column({ field: 'deleted_at' })
   deleted_at: Date;
 }
 

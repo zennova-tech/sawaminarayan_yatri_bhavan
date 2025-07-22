@@ -10,13 +10,7 @@ const HotelSettingUpdate = async (req: Request, res: Response) => {
       return generalResponse(req, res, null, 'Hotel settings not found', false);
     }
     await settings.update(req.body);
-    return generalResponse(
-      req,
-      res,
-      settings,
-      'Hotel settings data updated successfully',
-      false
-    );
+    return generalResponse(req, res, settings, 'Hotel settings data updated successfully', false);
   } catch (error) {
     return generalResponse(
       req,
@@ -25,7 +19,7 @@ const HotelSettingUpdate = async (req: Request, res: Response) => {
       'Failed to update hotel settings data',
       false,
       'error',
-      500
+      500,
     );
   }
 };
@@ -37,13 +31,7 @@ const getAvailableRoomsController = async (req: Request, res: Response) => {
     const checkIn = new Date(check_in as string);
     const checkOut = new Date(check_out as string);
     const availableRooms = await getAvailableRooms(checkIn, checkOut);
-    return generalResponse(
-      req,
-      res,
-      availableRooms,
-      'Available rooms fetched successfully',
-      false
-    );
+    return generalResponse(req, res, availableRooms, 'Available rooms fetched successfully', false);
   } catch (ex) {
     return generalResponse(
       req,
@@ -52,7 +40,7 @@ const getAvailableRoomsController = async (req: Request, res: Response) => {
       'Failed to update hotel settings data',
       false,
       'error',
-      500
+      500,
     );
   }
 };

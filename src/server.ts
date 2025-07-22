@@ -9,10 +9,7 @@ import { releaseBookedRooms } from './controllers/booking.controller';
 import passport from './middleware/passport';
 import router from './routes';
 import { sequelize } from './sequilizedir/models';
-import {
-  whatsAppStatus,
-  whatsAppVerification,
-} from './services/whatsApp/whatsApp.service';
+import { whatsAppStatus, whatsAppVerification } from './services/whatsApp/whatsApp.service';
 
 const app: Express = express();
 const port = PORT ?? 3000;
@@ -21,7 +18,7 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 app.use('/images', express.static('src/assets'));
@@ -65,7 +62,7 @@ const main = async () => {
     },
     {
       timezone: 'Asia/Kolkata',
-    }
+    },
   );
 };
 main();

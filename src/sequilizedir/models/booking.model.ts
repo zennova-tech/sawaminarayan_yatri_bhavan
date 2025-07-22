@@ -20,13 +20,14 @@ export interface IBooking {
   check_in: Date;
   check_out: Date;
   rooms_booked: number;
-  guests_per_room: number;
+  total_guests: number;
   extra_mattresses: number;
   total_amount: number;
   payment_id: string;
   user_id: string;
   payment_type: string;
   created_by?: string;
+  status?: string;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -59,7 +60,7 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  guests_per_room: number;
+  total_guests: number;
 
   @AllowNull(true)
   @Default(0)
@@ -90,6 +91,11 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @Default('SYSTEM')
   @Column(DataType.STRING)
   created_by: string;
+
+  @AllowNull(false)
+  @Default('pending')
+  @Column(DataType.STRING)
+  status: string;
 
   @CreatedAt
   @Column({ field: 'created_at' })

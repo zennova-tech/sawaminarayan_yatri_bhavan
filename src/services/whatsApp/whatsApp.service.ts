@@ -14,10 +14,7 @@ import * as fs from 'fs';
 
 const uploadMedia = async () => {
   const formData = new FormData();
-  formData.append(
-    'file',
-    fs.createReadStream('src/assets/whatsapp_banner.jpeg')
-  );
+  formData.append('file', fs.createReadStream('src/assets/whatsapp_banner.jpeg'));
   formData.append('type', 'image/jpeg');
   formData.append('messaging_product', 'whatsapp');
 
@@ -29,7 +26,7 @@ const uploadMedia = async () => {
         Authorization: `Bearer ${WHATSAPP_TOKEN}`,
         'Content-Type': 'multipart/form-data',
       },
-    }
+    },
   );
   return response.data.id;
 };
@@ -73,7 +70,7 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
               { type: 'text', text: data.rooms.toString() }, // Ensure string
               {
                 type: 'text',
-                text: (data.rooms * data.guest_per_room).toString(),
+                text: (data.rooms * data.total_guests).toString(),
               },
               { type: 'text', text: data.mattress.toString() },
               { type: 'text', text: data.amount.toString() },
@@ -154,7 +151,7 @@ export const whatsAppStatus = async (req: Request, res: Response) => {
           errors: status.errors || 'No errors',
         },
         'Message Status Update',
-        false
+        false,
       );
     }
 

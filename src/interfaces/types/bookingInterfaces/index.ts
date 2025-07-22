@@ -1,8 +1,9 @@
 export type bookingPayload = {
+  id?: string;
   check_out: Date;
   check_in: Date;
   rooms: number;
-  guest_per_room: number;
+  total_guests: number;
   mattress: number | null;
   amount: number;
   payment_id?: string;
@@ -11,8 +12,8 @@ export type bookingPayload = {
 };
 
 export enum Role {
-  Admin = "admin",
-  User = "user",
+  Admin = 'admin',
+  User = 'user',
 }
 
 export type usersPayload = {
