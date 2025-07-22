@@ -1,3 +1,4 @@
+    import Booking from '@/sequilizedir/models/booking.model';
 import Users from '@/sequilizedir/models/users.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { Request, Response } from 'express';
@@ -37,6 +38,7 @@ const getUsers = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    await Booking.destroy({ where: { user_id: id } });
     await Users.destroy({ where: { id } });
     return generalResponse(req, res, null, 'User deleted successfully', false);
   } catch (error) {
