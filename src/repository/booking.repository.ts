@@ -22,7 +22,7 @@ const hotelDetails = async (req: Request) => {
   });
 };
 
-const fetchBookingsData = async (checkInDate?: string) => {
+const fetchBookingsData = async (checkInDate?: string, status?: string) => {
   return await Booking.findAll({
     attributes: [
       'id',
@@ -35,6 +35,7 @@ const fetchBookingsData = async (checkInDate?: string) => {
     ],
     where: {
       ...(checkInDate ? { check_in: new Date(checkInDate) } : {}),
+      ...(status ? { status } : {}),
     },
     include: [
       {
@@ -75,13 +76,6 @@ const BookingRooms = async (
   if ((hotelSettings.available_rooms || 0) - data.rooms < 0) {
     throw new Error('Not enough available rooms');
   }
-  await HotelSettings.update(
-    {
-      booked_rooms: (hotelSettings.booked_rooms || 0) + data.rooms,
-      available_rooms: (hotelSettings.available_rooms || 0) - data.rooms,
-    },
-    { where: { id: hotelSettings.id }, transaction },
-  );
   if (data.id) {
     await Booking.update(bookingPayload, { where: { id: data.id }, transaction });
     return await Booking.findOne({ where: { id: data.id }, transaction });
@@ -115,6 +109,9 @@ const getAvailableRooms = async (checkInDate: Date, checkOutDate: Date) => {
       check_out: {
         [Op.gt]: checkInDate, // booking ends after user's check-in
       },
+      status: {
+        [Op.ne]: 'cancelled',
+      },
     },
   });
 
@@ -124,7 +121,7 @@ const getAvailableRooms = async (checkInDate: Date, checkOutDate: Date) => {
   const hotelSettingData = await HotelSettings.findOne();
 
   const availableRooms =
-    hotelSettingData.total_rooms - hotelSettingData.under_maintenance_rooms - roomsBooked;
+    hotelSettingData.available_rooms - hotelSettingData.under_maintenance_rooms - roomsBooked;
 
   return availableRooms > 0 ? availableRooms : 0;
 };

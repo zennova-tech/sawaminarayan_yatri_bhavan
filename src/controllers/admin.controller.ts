@@ -17,15 +17,16 @@ import {
   updatePriceRuleData,
 } from '@/repository/priceRules.repository';
 import Booking from '@/sequilizedir/models/booking.model';
+import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { eachDayOfInterval } from 'date-fns';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
-  const { checkInDate } = req.query;
+  const { checkInDate, status } = req.query;
   try {
-    const bookings: Booking[] | null = await fetchBookingsData(checkInDate as string);
+    const bookings: Booking[] | null = await fetchBookingsData(checkInDate as string, status as string);
     return generalResponse(req, res, bookings, 'Booking List fetched successfully', false);
   } catch (error) {
     return generalResponse(req, res, error, 'Failed to fetch booking list', false, 'error', 500);

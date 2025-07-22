@@ -207,15 +207,6 @@ const releaseBookedRooms = async () => {
       totalRoomsToRelease += booking.rooms_booked;
       await booking.destroy();
     }
-    const hotelSettings = await HotelSettings.findOne();
-    if (hotelSettings) {
-      hotelSettings.available_rooms = (hotelSettings.available_rooms || 0) + totalRoomsToRelease;
-      hotelSettings.booked_rooms = Math.max(
-        (hotelSettings.booked_rooms || 0) - totalRoomsToRelease,
-        0,
-      );
-      await hotelSettings.save();
-    }
     console.log(
       `Released ${totalRoomsToRelease} rooms and removed ${expiredBookings.length} bookings`,
     );
