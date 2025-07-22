@@ -9,6 +9,7 @@ import {
   updateBooking,
   updateRoomRule,
 } from '@/controllers/admin.controller';
+import { deleteUser, getUsers } from '@/controllers/user.controller';
 import { authMiddleware } from '@/middleware/auth';
 import validationMiddleware from '@/middleware/validation';
 import {
@@ -17,6 +18,7 @@ import {
   checkInDateSchema,
   deleteBookingSchema,
   deleteRoomRuleSchema,
+  getUsersSchema,
   roomRuleSchema,
 } from '@/validationSchema/checkInDateSchema';
 import express, { Router } from 'express';
@@ -28,6 +30,19 @@ router.get(
   authMiddleware,
   validationMiddleware(checkInDateSchema, 'query'),
   AdminDashboard,
+);
+
+router.get(
+  '/users',
+  authMiddleware,
+  validationMiddleware(getUsersSchema, 'query'),
+  getUsers,
+);
+
+router.delete(
+  '/users/:id',
+  authMiddleware,
+  deleteUser,
 );
 
 router.delete(

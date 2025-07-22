@@ -54,3 +54,7 @@ export const calculatePriceSchema = Joi.object({
 export const cancelBookingSchema = Joi.object({
   id: Joi.string().required(),
 });
+
+export const getUsersSchema = Joi.object({
+  search: Joi.string().optional(),
+});
