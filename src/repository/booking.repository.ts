@@ -66,8 +66,8 @@ const BookingRooms = async (
     last_name: data.last_name,
     phone_number: data.phone_number,
     email: data.email,
-    address1: data.address1,
-    address2: data.address2,
+    address_line_1: data.address1,
+    address_line_2: data.address2,
     city: data.city,
     state: data.state,
   };
