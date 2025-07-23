@@ -13,10 +13,17 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { Optional } from 'sequelize';
-import Users from './users.model';
 
 export interface IBooking {
   id?: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  email: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
   check_in: Date;
   check_out: Date;
   rooms_booked: number;

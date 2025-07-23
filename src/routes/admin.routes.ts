@@ -9,7 +9,7 @@ import {
   updateBooking,
   updateRoomRule,
 } from '@/controllers/admin.controller';
-import { deleteUser, getUsers } from '@/controllers/user.controller';
+import { getUsers } from '@/controllers/user.controller';
 import { authMiddleware } from '@/middleware/auth';
 import validationMiddleware from '@/middleware/validation';
 import {
@@ -32,18 +32,7 @@ router.get(
   AdminDashboard,
 );
 
-router.get(
-  '/users',
-  authMiddleware,
-  validationMiddleware(getUsersSchema, 'query'),
-  getUsers,
-);
-
-router.delete(
-  '/users/:id',
-  authMiddleware,
-  deleteUser,
-);
+router.get('/users', authMiddleware, validationMiddleware(getUsersSchema, 'query'), getUsers);
 
 router.delete(
   '/booking',
