@@ -20,14 +20,14 @@ export interface IBooking {
   last_name: string;
   phone_number: string;
   email: string;
-  address1: string;
-  address2: string;
   city: string;
   state: string;
   check_in: Date;
   check_out: Date;
   rooms_booked: number;
   total_guests: number;
+  address_line_1: string;
+  address_line_2: string;
   extra_mattresses: number;
   total_amount: number;
   payment_id: string;

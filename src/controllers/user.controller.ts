@@ -7,38 +7,44 @@ import { col, fn, literal, Op, QueryTypes } from 'sequelize';
 const getUsers = async (req: Request, res: Response) => {
   try {
     const search = req.query.search as string;
+    const latestBookings = await Booking.findAll({
+      attributes: ['phone_number', [fn('MAX', col('updated_at')), 'updated_at']],
+      where: {
+        deleted_at: null,
+        ...(search && {
+          [Op.or]: [
+            { first_name: { [Op.iLike]: `%${search}%` } },
+            { last_name: { [Op.iLike]: `%${search}%` } },
+            { email: { [Op.iLike]: `%${search}%` } },
+            {
+              [Op.and]: [
+                { first_name: { [Op.iLike]: `%${search.split(' ')[0]}%` } },
+                { last_name: { [Op.iLike]: `%${search.split(' ')[1] || ''}%` } },
+              ],
+            },
+          ],
+        }),
+      },
+      group: ['phone_number'],
+      raw: true,
+    });
     const users = await Booking.findAll({
-      where: search
-        ? {
-            [Op.or]: [
-              { first_name: { [Op.like]: `%${search}%` } },
-              { last_name: { [Op.like]: `%${search}%` } },
-              { email: { [Op.like]: `%${search}%` } },
-              {
-                [Op.and]: [
-                  { first_name: { [Op.like]: `%${search?.split(' ')[0]}%` } },
-                  { last_name: { [Op.like]: `%${search?.split(' ')[1]}%` } },
-                ],
-              },
-              {
-                [Op.and]: [
-                  { first_name: { [Op.like]: `%${search?.split(' ')[1]}%` } },
-                  { last_name: { [Op.like]: `%${search?.split(' ')[0]}%` } },
-                ],
-              },
-            ],
-          }
-        : {},
+      where: {
+        [Op.or]: latestBookings.map((b) => ({
+          phone_number: b.phone_number,
+          updated_at: b.updated_at,
+        })),
+      },
       attributes: [
-        [fn('DISTINCT', col('phone_number')), 'phone_number'],
-        [literal(`CONCAT("first_name", ' ', "last_name")`), 'name'],
-        [fn('MAX', col('updated_at')), 'latest_updated_at'],
+        'first_name',
+        'last_name',
         'phone_number',
         'email',
         'city',
         'state',
+        'updated_at',
+        [literal(`CONCAT("first_name", ' ', "last_name")`), 'name'],
       ],
-      group: ['phone_number', 'email', 'city', 'state', 'first_name', 'last_name'],
     });
 
     return generalResponse(req, res, users, 'Users fetched successfully', false);
