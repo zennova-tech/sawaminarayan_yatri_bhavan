@@ -1,7 +1,8 @@
+import { sequelize } from '@/sequilizedir/models';
 import Booking from '@/sequilizedir/models/booking.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { Request, Response } from 'express';
-import { literal, Op } from 'sequelize';
+import { col, fn, literal, Op, QueryTypes } from 'sequelize';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
@@ -29,15 +30,17 @@ const getUsers = async (req: Request, res: Response) => {
           }
         : {},
       attributes: [
+        [fn('DISTINCT', col('phone_number')), 'phone_number'],
         [literal(`CONCAT("first_name", ' ', "last_name")`), 'name'],
+        [fn('MAX', col('updated_at')), 'latest_updated_at'],
         'phone_number',
         'email',
         'city',
         'state',
       ],
-      group: ['phone_number', 'id'],
-      order: [['updated_at', 'DESC']],
+      group: ['phone_number', 'email', 'city', 'state', 'first_name', 'last_name'],
     });
+
     return generalResponse(req, res, users, 'Users fetched successfully', false);
   } catch (error) {
     return generalResponse(req, res, null, 'Users fetching failed', false, 'error', 500);
