@@ -8,7 +8,7 @@ export const checkInDateSchema = Joi.object({
       'date.format': `"checkInDate" must be in valid format`,
     })
     .optional(),
-    status: Joi.string().optional(),
+  status: Joi.string().optional(),
 });
 
 export const deleteBookingSchema = Joi.object({

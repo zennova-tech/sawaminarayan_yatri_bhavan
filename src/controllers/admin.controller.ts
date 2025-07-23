@@ -26,7 +26,10 @@ import { Request, Response } from 'express';
 const AdminDashboard = async (req: Request, res: Response) => {
   const { checkInDate, status } = req.query;
   try {
-    const bookings: Booking[] | null = await fetchBookingsData(checkInDate as string, status as string);
+    const bookings: Booking[] | null = await fetchBookingsData(
+      checkInDate as string,
+      status as string,
+    );
     return generalResponse(req, res, bookings, 'Booking List fetched successfully', false);
   } catch (error) {
     return generalResponse(req, res, error, 'Failed to fetch booking list', false, 'error', 500);
@@ -270,12 +273,15 @@ const calculatePrice = async (req: Request, res: Response) => {
     const checkInDate = new Date(check_in as string);
     const checkOutDate = new Date(check_out as string);
     const totalRooms = parseInt(total_rooms as string);
+    const nights = eachDayOfInterval({
+      start: checkInDate,
+      end: new Date(checkOutDate.getTime() - 1 * 24 * 60 * 60 * 1000),
+    });
 
-    // spread all the dates between check_in and check_out and find out all the price rules for that particular date, if no price rule then use default price rule, and based on the number of roms calculate the total price per day and also the final price
     let totalPrice = 0;
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
-    for (const date of eachDayOfInterval({ start: checkInDate, end: checkOutDate })) {
+    for (const date of nights) {
       const priceRule = await findPriceRuleByDate(date);
       let price = 0;
       if (priceRule) {

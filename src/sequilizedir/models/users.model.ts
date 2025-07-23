@@ -96,9 +96,6 @@ class Users extends Model<IUsers, ICreateAdminAttribute> {
   @DeletedAt
   @Column({ field: 'deleted_at' })
   deleted_at: Date;
-
-  @HasMany(() => Booking)
-  bookings: Booking[];
 }
 
 export default Users;
