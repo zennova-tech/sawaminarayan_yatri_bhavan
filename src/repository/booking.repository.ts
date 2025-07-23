@@ -32,26 +32,18 @@ const fetchBookingsData = async (checkInDate?: string, status?: string) => {
       'total_guests',
       'extra_mattresses',
       'total_amount',
+      [literal(`CONCAT("Booking"."first_name", ' ', "Booking"."last_name")`), 'name'],
+      'phone_number',
+      'email',
+      ['address_line_1', 'address1'],
+      ['address_line_2', 'address2'],
+      'city',
+      'state',
     ],
     where: {
       ...(checkInDate ? { check_in: new Date(checkInDate) } : {}),
       ...(status ? { status } : {}),
     },
-    include: [
-      {
-        model: Users,
-        as: 'users',
-        attributes: [
-          [literal(`CONCAT("users"."first_name", ' ', "users"."last_name")`), 'name'],
-          'phone_number',
-          'email',
-          ['address_line_1', 'address1'],
-          ['address_line_2', 'address2'],
-          'city',
-          'state',
-        ],
-      },
-    ],
   });
 };
 
