@@ -24,7 +24,6 @@ export interface IBooking {
   extra_mattresses: number;
   total_amount: number;
   payment_id: string;
-  user_id: string;
   payment_type: string;
   created_by?: string;
   status?: string;
@@ -45,6 +44,37 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)
   id: string;
+
+  @Column(DataType.STRING)
+  email: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  first_name: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  last_name: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  phone_number: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  address_line_1: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  address_line_2: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  city: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  state: string;
 
   @AllowNull(false)
   @Column(DataType.DATE)
@@ -80,14 +110,6 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   payment_type: string;
 
   @AllowNull(false)
-  @Column(DataType.INTEGER)
-  total_guests: number;
-
-  @ForeignKey(() => Users)
-  @Column(DataType.UUID)
-  user_id: string;
-
-  @AllowNull(false)
   @Default('SYSTEM')
   @Column(DataType.STRING)
   created_by: string;
@@ -108,9 +130,6 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @DeletedAt
   @Column({ field: 'deleted_at' })
   deleted_at: Date;
-
-  @BelongsTo(() => Users, { as: 'users' })
-  user: Users;
 }
 
 export default Booking;
