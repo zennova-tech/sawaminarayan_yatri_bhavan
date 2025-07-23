@@ -34,10 +34,9 @@
       "@lib/*": ["common/lib/*"],
       "@config": ["config"],
       "@constants/*": ["lib/common/constants/*"],
-
+      "@config/*": ["src/config/*"],
       "@sequelizeDir/*": ["sequelizeDir/*"],
       "@messages": ["lib/common/constants/messages.constants"],
-
       "@common/*": ["common/*"],
       "@helpers/*": ["common/helpers/*"],
       "@logger": ["common/utils/logger/index.ts"],
