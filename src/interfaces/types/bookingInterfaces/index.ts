@@ -1,14 +1,25 @@
 export type bookingPayload = {
-  check_in: Date;
+  id?: string;
   check_out: Date;
+  check_in: Date;
   rooms: number;
-  guest_per_room: number;
+  total_guests: number;
   mattress: number | null;
+  amount: number;
+  payment_id?: string;
+  payment_type?: string;
+  user_id?: string;
   first_name: string;
   last_name: string;
-  phone_number: number;
+  phone_number: string;
   email: string;
-  amount: number;
-  payment_id: string;
-  payment_type: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
 };
+
+export enum Role {
+  Admin = 'admin',
+  User = 'user',
+}

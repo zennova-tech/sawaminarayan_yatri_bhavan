@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
       await queryInterface.createTable(
-        'hotel_settings',
+        'expenses',
         {
           id: {
             type: Sequelize.UUID,
@@ -13,19 +13,19 @@ module.exports = {
             allowNull: false,
             primaryKey: true,
           },
-          total_rooms: { type: Sequelize.INTEGER, allowNull: false },
-          available_rooms: { type: Sequelize.INTEGER },
-          booked_rooms: { type: Sequelize.INTEGER },
-          under_maintenance_rooms: { type: Sequelize.INTEGER },
-          room_amount: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
-          room_capacity: { type: Sequelize.INTEGER, allowNull: false },
-          mattress_amount: { type: Sequelize.DECIMAL(6, 2), allowNull: false },
+          date: { type: Sequelize.DATE, allowNull: false },
+          name: { type: Sequelize.STRING, allowNull: false },
+          amount: { type: Sequelize.DECIMAL(10, 2), allowNull: false },
+          notes: {
+            type: Sequelize.STRING,
+            allowNull: true,
+          },
           created_at: {
             type: Sequelize.DATE,
             allowNull: false,
             defaultValue: Sequelize.NOW,
           },
-          updated_at: { type: Sequelize.DATE },
+          updated_at: { type: Sequelize.DATE, allowNull: false },
           deleted_at: { type: Sequelize.DATE },
         },
         { transaction: t },
@@ -35,7 +35,7 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
-      await queryInterface.dropTable('hotel_settings', {
+      await queryInterface.dropTable('expenses', {
         transaction: t,
         cascade: true,
       });

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 export const generalResponse = async (
   request: Request,
@@ -6,11 +6,11 @@ export const generalResponse = async (
   data: any = null,
   message: string,
   toast = false,
-  responseType = "success",
+  responseType = 'success',
   statusCode = 200,
 ) => {
   if (request.transaction) {
-    if (responseType === "success") await request.transaction.commit();
+    if (responseType === 'success') await request.transaction.commit();
     else await request.transaction.rollback();
   }
 

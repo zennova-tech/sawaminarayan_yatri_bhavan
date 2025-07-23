@@ -1,8 +1,10 @@
 import { Sequelize } from 'sequelize-typescript';
 import { DATABASE_URL } from '@/config';
-import Admin from './admin.model';
 import Booking from './booking.model';
 import HotelSettings from './hotelSettings.model';
+import Users from './users.model';
+import Expenses from './expenses.model';
+import RoomPriceRules from './roomPriceRules.model';
 
 const sequelize = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
@@ -23,13 +25,15 @@ const sequelize = new Sequelize(DATABASE_URL, {
   // logging: NODE_ENV !== "production" && logger.info.bind(null, "\n%s"),
 });
 
-sequelize.addModels([Admin, Booking, HotelSettings]);
+sequelize.addModels([Users, Booking, HotelSettings, Expenses, RoomPriceRules]);
 
 const db = {
   sequelize,
-  Admin,
+  Users,
   Booking,
   HotelSettings,
+  Expenses,
+  RoomPriceRules,
 };
 
 export { db, sequelize };

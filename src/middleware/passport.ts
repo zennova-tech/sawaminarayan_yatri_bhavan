@@ -22,16 +22,16 @@ const opts: StrategyOptions = {
   secretOrKey: SECRET_KEY,
 };
 
-  passport.use(
-    new JwtStrategy(opts, async (payload, done) => {
-      try {
-        const result = await db.Admin.findByPk(payload.id);
-        if (!result) return done(null, false);
-        return done(null, result);
-      } catch (err) {
-        return done(err, false);
-      }
-    })
-  );
+passport.use(
+  new JwtStrategy(opts, async (payload, done) => {
+    try {
+      const result = await db.Users.findByPk(payload.id);
+      if (!result) return done(null, false);
+      return done(null, result);
+    } catch (err) {
+      return done(err, false);
+    }
+  }),
+);
 
 export default passport;

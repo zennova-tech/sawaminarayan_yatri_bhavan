@@ -10,9 +10,6 @@ module.exports = {
       await queryInterface.removeColumn('bookings', 'payment_type_id', {
         transaction: t,
       });
-      await queryInterface.removeColumn('bookings', 'phone_number', {
-        transaction: t,
-      });
       await queryInterface.addColumn(
         'bookings',
         'payment_id',
@@ -20,7 +17,7 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: true,
         },
-        { transaction: t }
+        { transaction: t },
       );
       await queryInterface.addColumn(
         'bookings',
@@ -29,16 +26,7 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: true,
         },
-        { transaction: t }
-      );
-      await queryInterface.addColumn(
-        'bookings',
-        'phone_number',
-        {
-          type: Sequelize.BIGINT,
-          allowNull: false,
-        },
-        { transaction: t }
+        { transaction: t },
       );
     });
   },
@@ -51,9 +39,6 @@ module.exports = {
       await queryInterface.removeColumn('bookings', 'payment_type', {
         transaction: t,
       });
-      await queryInterface.removeColumn('bookings', 'phone_number', {
-        transaction: t,
-      });
       await queryInterface.addColumn(
         'bookings',
         'payment_id',
@@ -61,7 +46,7 @@ module.exports = {
           type: Sequelize.UUID,
           allowNull: true,
         },
-        { transaction: t }
+        { transaction: t },
       );
       await queryInterface.addColumn(
         'bookings',
@@ -70,16 +55,7 @@ module.exports = {
           type: Sequelize.INTEGER,
           allowNull: true,
         },
-        { transaction: t }
-      );
-      await queryInterface.addColumn(
-        'bookings',
-        'phone_number',
-        {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        { transaction: t }
+        { transaction: t },
       );
     });
   },

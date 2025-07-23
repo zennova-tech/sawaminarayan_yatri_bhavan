@@ -1,12 +1,15 @@
-import express, { Express } from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import http from "http";
-import { Server } from "socket.io";
-import { PORT } from "@config";
-import router from "./routes";
-import { sequelize } from "./sequilizedir/models";
-import passport from "./middleware/passport";
+import { PORT } from '@config';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import express, { Express } from 'express';
+import http from 'http';
+import cron from 'node-cron';
+import { Server } from 'socket.io';
+import { releaseBookedRooms } from './controllers/booking.controller';
+import passport from './middleware/passport';
+import router from './routes';
+import { sequelize } from './sequilizedir/models';
+import { whatsAppStatus, whatsAppVerification } from './services/whatsApp/whatsApp.service';
 
 const app: Express = express();
 const port = PORT ?? 3000;
@@ -15,18 +18,27 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
+
+app.use('/images', express.static('src/assets'));
 app.use(cors());
 app.use(express.json());
 const server = http.createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: [
+      'http://localhost:5173',
+      'https://swaminarayan-yatri-bhavan-frontend-eight.vercel.app',
+    ],
   },
 });
+
+// Webhook verification (required by Facebook)
+app.get('/webhook/whatsapp', whatsAppVerification);
+app.post('/webhook/whatsapp', whatsAppStatus);
 app.use(passport.initialize());
-app.use("/", router);
+app.use('/', router);
 
 const connectWithRetry = async () => {
   try {
@@ -38,7 +50,22 @@ const connectWithRetry = async () => {
   }
 };
 
-connectWithRetry();
+const main = async () => {
+  await connectWithRetry();
+
+  // Run every day at 10:00 AM IST
+  cron.schedule(
+    '0 12 * * *',
+    async () => {
+      console.log('Running cron at 10:00 AM IST');
+      await releaseBookedRooms();
+    },
+    {
+      timezone: 'Asia/Kolkata',
+    },
+  );
+};
+main();
 
 server.listen(port, () => {
   console.log('=================================');

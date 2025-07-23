@@ -1,11 +1,13 @@
-"use strict";
+'use strict';
+
+const { ref } = require('joi');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
       await queryInterface.createTable(
-        "bookings",
+        'bookings',
         {
           id: {
             type: Sequelize.UUID,
@@ -13,14 +15,10 @@ module.exports = {
             allowNull: false,
             primaryKey: true,
           },
-          email: { type: Sequelize.STRING, allowNull: false },
-          first_name: { type: Sequelize.STRING, allowNull: false },
-          last_name: { type: Sequelize.STRING, allowNull: true },
-          phone_number: { type: Sequelize.STRING, allowNull: false },
           check_in: { type: Sequelize.DATE, allowNull: false },
           check_out: { type: Sequelize.DATE, allowNull: false },
           rooms_booked: { type: Sequelize.INTEGER, allowNull: false },
-          guests_per_room: { type: Sequelize.INTEGER, allowNull: false },
+          total_guests: { type: Sequelize.INTEGER, allowNull: false },
           extra_mattresses: {
             type: Sequelize.INTEGER,
             allowNull: true,
@@ -32,7 +30,12 @@ module.exports = {
           created_by: {
             type: Sequelize.STRING,
             allowNull: false,
-            default: "SYSTEM",
+            default: 'SYSTEM',
+          },
+          status: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            default: 'pending',
           },
           created_at: {
             type: Sequelize.DATE,
@@ -42,14 +45,14 @@ module.exports = {
           updated_at: { type: Sequelize.DATE },
           deleted_at: { type: Sequelize.DATE },
         },
-        { transaction: t }
+        { transaction: t },
       );
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (t) => {
-      await queryInterface.dropTable("bookings", {
+      await queryInterface.dropTable('bookings', {
         transaction: t,
         cascade: true,
       });
