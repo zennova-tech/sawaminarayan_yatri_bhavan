@@ -1,10 +1,9 @@
-import { bookingPayload, usersPayload } from '@/interfaces/types/bookingInterfaces';
+import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
 import {
   BookingRooms,
   cancelBookingData,
   deleteBookingData,
   fetchBookingsData,
-  UserBookings,
 } from '@/repository/booking.repository';
 import {
   createPriceRule,
@@ -70,8 +69,6 @@ const createBooking = async (req: Request, res: Response) => {
       total_guests,
       mattress,
       amount,
-    };
-    const userPayload: usersPayload = {
       first_name,
       last_name,
       phone_number,
@@ -81,14 +78,8 @@ const createBooking = async (req: Request, res: Response) => {
       city,
       state,
     };
-    const userData = await UserBookings(userPayload, req.transaction);
-    notes.user_id = userData.id;
     const bookingData = await BookingRooms(notes, req.transaction);
-    const data = {
-      user: userData,
-      booking: bookingData,
-    };
-    return generalResponse(req, res, data, 'Booking created successfully', false);
+    return generalResponse(req, res, bookingData, 'Booking created successfully', false);
   } catch (error) {
     return generalResponse(req, res, error, 'Failed to create booking', false, 'error', 500);
   }
@@ -120,8 +111,6 @@ const updateBooking = async (req: Request, res: Response) => {
       total_guests,
       mattress,
       amount,
-    };
-    const userPayload: usersPayload = {
       first_name,
       last_name,
       phone_number,
@@ -131,14 +120,8 @@ const updateBooking = async (req: Request, res: Response) => {
       city,
       state,
     };
-    const userData = await UserBookings(userPayload, req.transaction);
-    notes.user_id = userData.id;
     const bookingData = await BookingRooms(notes, req.transaction);
-    const data = {
-      user: userData,
-      booking: bookingData,
-    };
-    return generalResponse(req, res, data, 'Booking created successfully', false);
+    return generalResponse(req, res, bookingData, 'Booking created successfully', false);
   } catch (error) {
     return generalResponse(req, res, error, 'Failed to create booking', false, 'error', 500);
   }

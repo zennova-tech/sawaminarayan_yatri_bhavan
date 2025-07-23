@@ -9,14 +9,6 @@ export type bookingPayload = {
   payment_id?: string;
   payment_type?: string;
   user_id?: string;
-};
-
-export enum Role {
-  Admin = 'admin',
-  User = 'user',
-}
-
-export type usersPayload = {
   first_name: string;
   last_name: string;
   phone_number: string;
@@ -26,3 +18,8 @@ export type usersPayload = {
   city: string;
   state: string;
 };
+
+export enum Role {
+  Admin = 'admin',
+  User = 'user',
+}

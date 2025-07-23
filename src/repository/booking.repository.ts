@@ -1,4 +1,4 @@
-import { bookingPayload, usersPayload } from '@/interfaces/types/bookingInterfaces';
+import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
 import Booking, { IBooking } from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import Users from '@/sequilizedir/models/users.model';
@@ -62,6 +62,14 @@ const BookingRooms = async (
     total_amount: data.amount,
     payment_id,
     payment_type: method,
+    first_name: data.first_name,
+    last_name: data.last_name,
+    phone_number: data.phone_number,
+    email: data.email,
+    address1: data.address1,
+    address2: data.address2,
+    city: data.city,
+    state: data.state,
   };
   const hotelSettings = await HotelSettings.findOne({ transaction });
   if ((hotelSettings.available_rooms || 0) - data.rooms < 0) {
@@ -72,17 +80,6 @@ const BookingRooms = async (
     return await Booking.findOne({ where: { id: data.id }, transaction });
   }
   return await Booking.create(bookingPayload, { transaction });
-};
-
-const UserBookings = async (data: usersPayload, transaction: Transaction) => {
-  const existingUser = await Users.findOne({
-    where: { phone_number: String(data.phone_number) },
-    transaction,
-  });
-  if (existingUser) {
-    return existingUser;
-  }
-  return await Users.create(data, { transaction });
 };
 
 const deleteBookingData = async (id: string) => {
@@ -122,7 +119,6 @@ const cancelBookingData = async (id: string) => {
 };
 
 export {
-  UserBookings,
   BookingRooms,
   deleteBookingData,
   fetchBookingsData,

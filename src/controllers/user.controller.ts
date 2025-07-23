@@ -1,33 +1,42 @@
-    import Booking from '@/sequilizedir/models/booking.model';
-import Users from '@/sequilizedir/models/users.model';
+import Booking from '@/sequilizedir/models/booking.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { Request, Response } from 'express';
-import { Op } from 'sequelize';
-
+import { literal, Op } from 'sequelize';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
     const search = req.query.search as string;
-    const users = await Users.findAll({
-      where: search ? {
-        [Op.or]: [
-          { first_name: { [Op.like]: `%${search}%` } },
-          { last_name: { [Op.like]: `%${search}%` } },
-          { email: { [Op.like]: `%${search}%` } },
-          {
-            [Op.and]: [
-              { first_name: { [Op.like]: `%${search?.split(' ')[0]}%` } },
-              { last_name: { [Op.like]: `%${search?.split(' ')[1]}%` } },
+    const users = await Booking.findAll({
+      where: search
+        ? {
+            [Op.or]: [
+              { first_name: { [Op.like]: `%${search}%` } },
+              { last_name: { [Op.like]: `%${search}%` } },
+              { email: { [Op.like]: `%${search}%` } },
+              {
+                [Op.and]: [
+                  { first_name: { [Op.like]: `%${search?.split(' ')[0]}%` } },
+                  { last_name: { [Op.like]: `%${search?.split(' ')[1]}%` } },
+                ],
+              },
+              {
+                [Op.and]: [
+                  { first_name: { [Op.like]: `%${search?.split(' ')[1]}%` } },
+                  { last_name: { [Op.like]: `%${search?.split(' ')[0]}%` } },
+                ],
+              },
             ],
-          },
-          {
-            [Op.and]: [
-              { first_name: { [Op.like]: `%${search?.split(' ')[1]}%` } },
-              { last_name: { [Op.like]: `%${search?.split(' ')[0]}%` } },
-            ],
-          },
-        ],
-      } : {},
+          }
+        : {},
+      attributes: [
+        [literal(`CONCAT("first_name", ' ', "last_name")`), 'name'],
+        'phone_number',
+        'email',
+        'city',
+        'state',
+      ],
+      group: ['phone_number', 'id'],
+      order: [['updated_at', 'DESC']],
     });
     return generalResponse(req, res, users, 'Users fetched successfully', false);
   } catch (error) {
@@ -35,18 +44,4 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-const deleteUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    await Booking.destroy({ where: { user_id: id } });
-    await Users.destroy({ where: { id } });
-    return generalResponse(req, res, null, 'User deleted successfully', false);
-  } catch (error) {
-    return generalResponse(req, res, null, 'User deletion failed', false, 'error', 500);
-  }
-};
-
-export {
-  getUsers,
-  deleteUser,
-};
+export { getUsers };

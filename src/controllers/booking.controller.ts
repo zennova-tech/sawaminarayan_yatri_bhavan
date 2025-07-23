@@ -1,6 +1,6 @@
 import { MAIL_CLIENT, MAIL_PASS, MAIL_USER, RAZORPAY_WEBHOOK_SECRET } from '@/config';
-import { bookingPayload, usersPayload } from '@/interfaces/types/bookingInterfaces';
-import { BookingRooms, hotelDetails, UserBookings } from '@/repository/booking.repository';
+import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
+import { BookingRooms, hotelDetails } from '@/repository/booking.repository';
 import Booking from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import razorpayInstance from '@/services/razorpay/razorpay.service';
@@ -102,8 +102,6 @@ const razorpayWebhook = async (req: Request, res: Response) => {
           total_guests: notes.total_guests,
           mattress: notes.mattress,
           amount: notes.amount,
-        };
-        const userPayload: usersPayload = {
           first_name: notes.first_name,
           last_name: notes.last_name,
           phone_number: notes.phone_number,
@@ -113,8 +111,6 @@ const razorpayWebhook = async (req: Request, res: Response) => {
           city: notes.city,
           state: notes.state,
         };
-        const userData = await UserBookings(userPayload, req.transaction);
-        bookingNotes.user_id = userData.id;
         await BookingRooms(bookingNotes, req.transaction);
         await sendWhatsAppMessage(notes.phone_number, notes);
         return generalResponse(
