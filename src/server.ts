@@ -1,4 +1,3 @@
-import { PORT } from '@config';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
@@ -10,6 +9,7 @@ import passport from './middleware/passport';
 import router from './routes';
 import { sequelize } from './sequilizedir/models';
 import { whatsAppStatus, whatsAppVerification } from './services/whatsApp/whatsApp.service';
+import { PORT } from './config';
 
 const app: Express = express();
 const port = PORT ?? 3000;
