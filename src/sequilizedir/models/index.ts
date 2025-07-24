@@ -11,6 +11,10 @@ const sequelize = new Sequelize(DATABASE_URL, {
   timezone: '+00:00', // UTC timezone
   dialectOptions: {
     timezone: '+00:00',
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
   },
   pool: {
     max: 20, // Increased max connections
