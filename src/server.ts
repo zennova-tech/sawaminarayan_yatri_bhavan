@@ -10,6 +10,8 @@ import router from './routes';
 import { sequelize } from './sequilizedir/models';
 import { whatsAppStatus, whatsAppVerification } from './services/whatsApp/whatsApp.service';
 import { PORT } from './config';
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
 
 const app: Express = express();
 const port = PORT ?? 3000;
