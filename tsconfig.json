@@ -24,7 +24,7 @@
     "baseUrl": "src",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["DOM", "ES2021.String", "esnext.asynciterable"],
+    "lib": ["ES2021", "DOM", "esnext.asynciterable"],
     "paths": {
       "*": ["overWriteTypes/"],
       "@/*": ["*"],
