@@ -11,6 +11,7 @@ import { sequelize } from './sequilizedir/models';
 import { whatsAppStatus, whatsAppVerification } from './services/whatsApp/whatsApp.service';
 import { PORT } from './config';
 import dns from 'dns';
+import 'reflect-metadata';
 dns.setDefaultResultOrder('ipv4first');
 
 const app: Express = express();
