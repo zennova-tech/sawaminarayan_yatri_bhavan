@@ -1,18 +1,16 @@
+import { Optional } from 'sequelize';
 import {
-  Table,
-  Model,
+  AllowNull,
   Column,
-  PrimaryKey,
+  CreatedAt,
   DataType,
   Default,
-  AllowNull,
-  CreatedAt,
-  UpdatedAt,
   DeletedAt,
-  ForeignKey,
-  BelongsTo,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
 } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
 
 export interface IBooking {
   id?: string;
@@ -32,6 +30,10 @@ export interface IBooking {
   total_amount: number;
   payment_id: string;
   payment_type: string;
+  payment_status: string;
+  amount_paid: number;
+  amount_due: number;
+  remarks: string;
   created_by?: string;
   status?: string;
   created_at?: Date;
@@ -120,6 +122,22 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @Default('SYSTEM')
   @Column(DataType.STRING)
   created_by: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  payment_status: string;
+
+  @AllowNull(true)
+  @Column(DataType.DECIMAL(10, 2))
+  amount_paid: number;
+
+  @AllowNull(true)
+  @Column(DataType.DECIMAL(10, 2))
+  amount_due: number;
+
+  @AllowNull(true)
+  @Column(DataType.STRING)
+  remarks: string;
 
   @AllowNull(false)
   @Default('pending')

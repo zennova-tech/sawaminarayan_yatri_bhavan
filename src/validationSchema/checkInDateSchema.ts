@@ -31,6 +31,10 @@ export const bookingSchema = Joi.object({
   state: Joi.string().optional().allow(''),
   amount: Joi.number().required(),
   agree: Joi.boolean().optional(),
+  amount_paid: Joi.number().optional(),
+  amount_due: Joi.number().optional(),
+  payment_status: Joi.string().optional(),
+  remarks: Joi.string().optional().allow(''),
 });
 
 export const roomRuleSchema = Joi.object({

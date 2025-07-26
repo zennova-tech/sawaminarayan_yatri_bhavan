@@ -1,14 +1,13 @@
-import { MAIL_CLIENT, MAIL_PASS, MAIL_USER, RAZORPAY_WEBHOOK_SECRET } from '@/config';
+import { MAIL_CLIENT, RAZORPAY_WEBHOOK_SECRET } from '@/config';
 import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
 import { BookingRooms, hotelDetails } from '@/repository/booking.repository';
 import Booking from '@/sequilizedir/models/booking.model';
-import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
+import { sendMail } from '@/services/mail/mail.service';
 import razorpayInstance from '@/services/razorpay/razorpay.service';
 import { sendWhatsAppMessage } from '@/services/whatsApp/whatsApp.service';
 import { generalResponse } from '@/utils/generalResponse';
 import crypto from 'crypto';
 import { Request, Response } from 'express';
-import nodemailer from 'nodemailer';
 import { Op } from 'sequelize';
 
 type OrderCreateRequestBody = {
@@ -110,8 +109,19 @@ const razorpayWebhook = async (req: Request, res: Response) => {
           address2: notes.address2,
           city: notes.city,
           state: notes.state,
+          payment_status: 'paid',
+          amount_paid: notes.amount,
+          amount_due: 0,
+          remarks: notes.remarks,
         };
-        await BookingRooms(bookingNotes, req.transaction);
+
+        await BookingRooms(bookingNotes, req.transaction, payment.id, payment.method);
+        await sendMail(
+          bookingNotes.email,
+          'Booking Confirmation - Thank you for booking with us!',
+          bookingNotes,
+        );
+        await sendMail(MAIL_CLIENT, 'New Booking Received', bookingNotes, true);
         await sendWhatsAppMessage(notes.phone_number, notes);
         return generalResponse(
           req,
@@ -145,39 +155,18 @@ const DashboardController = async (req: Request, res: Response) => {
 const contactToMail = async (req: Request, res: Response) => {
   try {
     const { full_name, phone_number, message, email } = req.body;
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: MAIL_USER, // Your Gmail address
-        pass: MAIL_PASS, // App Password
+    await sendMail(
+      MAIL_CLIENT,
+      'New Contact Inquiry - Swaminarayan Yatri Bhavan',
+      {
+        full_name,
+        phone_number,
+        message,
+        email,
       },
-    });
-    const mailOptions = {
-      from: `"Swaminarayan Yatri Bhavan" <${MAIL_USER}>`,
-      to: MAIL_CLIENT, // Send to client email
-      subject: 'New Contact Inquiry - Swaminarayan Yatri Bhavan',
-      html: `
-            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2 style="color: #e65100;">Swaminarayan Yatri Bhavan</h2>
-            <p>You have received a new inquiry from the contact form.</p>
-
-            <hr style="border: none; border-top: 1px solid #ccc;" />
-
-            <p><strong>Full Name:</strong> ${full_name}</p>
-            <p><strong>Phone Number:</strong> ${phone_number}</p>
-            <p><strong>Email:</strong> ${email}</p>
-
-            <p><strong>Message:</strong></p>
-            <p style="margin-left: 16px;">${message}</p>
-            
-            <hr style="border: none; border-top: 1px solid #ccc;" />
-
-            <p style="font-size: 0.9rem; color: #888;">
-            This message was submitted via the Swaminarayan Yatri Bhavan website.
-            </p>
-            </div>`,
-    };
-    await transporter.sendMail(mailOptions);
+      false,
+      true,
+    );
     return generalResponse(req, res, null, 'Mail sent successfully', false);
   } catch (error) {
     console.log('🚀 ~ :205 ~ contactToMail ~ error:', error);
