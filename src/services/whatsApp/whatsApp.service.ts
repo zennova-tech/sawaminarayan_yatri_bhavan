@@ -1,5 +1,4 @@
 import {
-  BASE_URL,
   EXPLORE_URL,
   WHATSAPP_PHONE_NUMBER_ID,
   WHATSAPP_TOKEN,
@@ -107,13 +106,7 @@ export const whatsAppVerification = async (req: Request, res: Response) => {
     if (mode && token) {
       if (mode === 'subscribe' && token === WHATSAPP_WEBHOOK_TOKEN) {
         console.log('Webhook verified successfully!');
-        return generalResponse(
-          req,
-          res,
-          challenge,
-          'Webhook verified successfully!',
-          false
-        );
+        return generalResponse(req, res, challenge, 'Webhook verified successfully!', false);
       } else {
         return generalResponse(
           req,
@@ -122,7 +115,7 @@ export const whatsAppVerification = async (req: Request, res: Response) => {
           'Webhook secret not configured',
           false,
           'error',
-          403
+          403,
         );
       }
     }

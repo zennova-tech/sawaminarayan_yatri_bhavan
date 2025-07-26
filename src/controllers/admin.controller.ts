@@ -9,14 +9,13 @@ import {
   createPriceRule,
   deletePriceRuleData,
   fetchDefaultPriceRule,
-  findPriceRuleByDate,
   fetchPriceRuleData,
   findOverlappingDateRule,
+  findPriceRuleByDate,
   findPriceRuleByName,
   updatePriceRuleData,
 } from '@/repository/priceRules.repository';
 import Booking from '@/sequilizedir/models/booking.model';
-import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { eachDayOfInterval } from 'date-fns';
@@ -61,6 +60,10 @@ const createBooking = async (req: Request, res: Response) => {
       address2,
       city,
       state,
+      payment_status,
+      amount_paid,
+      amount_due,
+      remarks,
     } = req.body;
     const notes: bookingPayload = {
       check_in,
@@ -77,6 +80,10 @@ const createBooking = async (req: Request, res: Response) => {
       address2,
       city,
       state,
+      payment_status,
+      amount_paid,
+      amount_due,
+      remarks,
     };
     const bookingData = await BookingRooms(notes, req.transaction);
     return generalResponse(req, res, bookingData, 'Booking created successfully', false);
@@ -296,13 +303,13 @@ const calculatePrice = async (req: Request, res: Response) => {
 
 export {
   AdminDashboard,
-  createBooking,
-  DeleteBooking,
-  createRoomRule,
-  DeleteRoomRule,
-  updateRoomRule,
-  PriceRules,
   calculatePrice,
-  updateBooking,
   cancelBooking,
+  createBooking,
+  createRoomRule,
+  DeleteBooking,
+  DeleteRoomRule,
+  PriceRules,
+  updateBooking,
+  updateRoomRule,
 };

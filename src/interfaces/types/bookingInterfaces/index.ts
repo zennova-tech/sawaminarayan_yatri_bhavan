@@ -17,9 +17,20 @@ export type bookingPayload = {
   address2: string;
   city: string;
   state: string;
+  payment_status?: string;
+  amount_paid?: number;
+  amount_due?: number;
+  remarks?: string;
 };
 
 export enum Role {
   Admin = 'admin',
   User = 'user',
 }
+
+export type ContactPayload = {
+  full_name: string;
+  phone_number: number;
+  message: string;
+  email: string;
+};
