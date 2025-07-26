@@ -24,7 +24,7 @@
     "baseUrl": "src",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["DOM", "ES2021.String", "esnext.asynciterable"],
+    "lib": ["ES2021", "DOM", "esnext.asynciterable"],
     "paths": {
       "*": ["overWriteTypes/"],
       "@/*": ["*"],
@@ -32,12 +32,10 @@
       "@modules/*": ["modules/*"],
       "@middlewares/*": ["middlewares/*"],
       "@lib/*": ["common/lib/*"],
-      "@config": ["config"],
+      "@config/*": ["config/*"],
       "@constants/*": ["lib/common/constants/*"],
-
       "@sequelizeDir/*": ["sequelizeDir/*"],
       "@messages": ["lib/common/constants/messages.constants"],
-
       "@common/*": ["common/*"],
       "@helpers/*": ["common/helpers/*"],
       "@logger": ["common/utils/logger/index.ts"],

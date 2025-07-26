@@ -1,7 +1,6 @@
 import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
 import Booking, { IBooking } from '@/sequilizedir/models/booking.model';
 import HotelSettings from '@/sequilizedir/models/hotelSettings.model';
-import Users from '@/sequilizedir/models/users.model';
 import { Request } from 'express';
 import { literal, Op, Transaction } from 'sequelize';
 
@@ -39,6 +38,11 @@ const fetchBookingsData = async (checkInDate?: string, status?: string) => {
       ['address_line_2', 'address2'],
       'city',
       'state',
+      ['payment_type', 'method'],
+      'payment_status',
+      'amount_paid',
+      'amount_due',
+      'remarks',
     ],
     where: {
       ...(checkInDate ? { check_in: new Date(checkInDate) } : {}),
@@ -70,6 +74,10 @@ const BookingRooms = async (
     address_line_2: data.address2,
     city: data.city,
     state: data.state,
+    payment_status: data.payment_status,
+    amount_paid: data.amount_paid,
+    amount_due: data.amount_due,
+    remarks: data.remarks,
   };
   const hotelSettings = await HotelSettings.findOne({ transaction });
   if ((hotelSettings.available_rooms || 0) - data.rooms < 0) {
@@ -120,9 +128,9 @@ const cancelBookingData = async (id: string) => {
 
 export {
   BookingRooms,
+  cancelBookingData,
   deleteBookingData,
   fetchBookingsData,
-  hotelDetails,
   getAvailableRooms,
-  cancelBookingData,
+  hotelDetails,
 };

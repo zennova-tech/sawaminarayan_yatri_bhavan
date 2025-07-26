@@ -1,16 +1,20 @@
-import { Sequelize } from 'sequelize-typescript';
 import { DATABASE_URL } from '@/config';
+import { Sequelize } from 'sequelize-typescript';
 import Booking from './booking.model';
-import HotelSettings from './hotelSettings.model';
-import Users from './users.model';
 import Expenses from './expenses.model';
+import HotelSettings from './hotelSettings.model';
 import RoomPriceRules from './roomPriceRules.model';
+import Users from './users.model';
 
 const sequelize = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
   timezone: '+00:00', // UTC timezone
   dialectOptions: {
     timezone: '+00:00',
+    // ssl: {
+    //   require: true,
+    //   rejectUnauthorized: false,
+    // },
   },
   pool: {
     max: 20, // Increased max connections
