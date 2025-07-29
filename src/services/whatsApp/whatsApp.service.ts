@@ -105,8 +105,7 @@ export const whatsAppVerification = async (req: Request, res: Response) => {
 
     if (mode && token) {
       if (mode === 'subscribe' && token === WHATSAPP_WEBHOOK_TOKEN) {
-        console.log('Webhook verified successfully!');
-        return generalResponse(req, res, challenge, 'Webhook verified successfully!', false);
+        return res.status(200).send(challenge);
       } else {
         return generalResponse(
           req,
