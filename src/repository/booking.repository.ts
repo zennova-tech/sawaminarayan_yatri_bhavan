@@ -116,8 +116,7 @@ const getAvailableRooms = async (checkInDate: Date, checkOutDate: Date) => {
 
   const hotelSettingData = await HotelSettings.findOne();
 
-  const availableRooms =
-    hotelSettingData.available_rooms - hotelSettingData.under_maintenance_rooms - roomsBooked;
+  const availableRooms = hotelSettingData.available_rooms - roomsBooked;
 
   return availableRooms > 0 ? availableRooms : 0;
 };
