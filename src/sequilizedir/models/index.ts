@@ -8,14 +8,7 @@ import Users from './users.model';
 
 const sequelize = new Sequelize(DATABASE_URL, {
   dialect: 'postgres',
-  timezone: '+00:00', // UTC timezone
-  dialectOptions: {
-    timezone: '+00:00',
-    // ssl: {
-    //   require: true,
-    //   rejectUnauthorized: false,
-    // },
-  },
+  // timezone: '+00:00', // UTC timezone
   pool: {
     max: 20, // Increased max connections
     min: 5, // Maintain minimum idle connections
