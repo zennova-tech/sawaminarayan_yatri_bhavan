@@ -1,16 +1,15 @@
-import { sequelize } from '@/sequilizedir/models';
 import Booking from '@/sequilizedir/models/booking.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { Request, Response } from 'express';
-import { col, fn, literal, Op, QueryTypes } from 'sequelize';
+import { col, fn, literal, Op } from 'sequelize';
 
 const getUsers = async (req: Request, res: Response) => {
   try {
     const search = req.query.search as string;
     const latestBookings = await Booking.findAll({
+      paranoid: false,
       attributes: ['phone_number', [fn('MAX', col('updated_at')), 'updated_at']],
       where: {
-        deleted_at: null,
         ...(search && {
           [Op.or]: [
             { first_name: { [Op.iLike]: `%${search}%` } },
@@ -29,6 +28,7 @@ const getUsers = async (req: Request, res: Response) => {
       raw: true,
     });
     const users = await Booking.findAll({
+      paranoid: false,
       where: {
         [Op.or]: latestBookings.map((b) => ({
           phone_number: b.phone_number,
