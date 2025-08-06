@@ -19,7 +19,6 @@ import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { eachDayOfInterval } from 'date-fns';
-import { format, toZonedTime } from 'date-fns-tz';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
@@ -272,8 +271,6 @@ const calculatePrice = async (req: Request, res: Response) => {
     let totalPrice = 0;
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
-    const timeZone = 'Asia/Kolkata';
-
     for (const date of nights) {
       const priceRule = await findPriceRuleByDate(date);
       let price = 0;
@@ -283,10 +280,8 @@ const calculatePrice = async (req: Request, res: Response) => {
         price = defaultPriceRule?.price_per_night * totalRooms;
       }
       totalPrice += price;
-      const zonedDate = toZonedTime(date, timeZone);
-      const formattedDate = format(zonedDate, 'yyyy-MM-dd HH:mm:ssXXX', { timeZone });
       metadata.push({
-        date: formattedDate,
+        date,
         price,
       });
     }
