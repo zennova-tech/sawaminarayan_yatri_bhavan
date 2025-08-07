@@ -1,17 +1,17 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import dns from 'dns';
 import express, { Express } from 'express';
 import http from 'http';
 import cron from 'node-cron';
+import 'reflect-metadata';
 import { Server } from 'socket.io';
+import { PORT } from './config';
 import { releaseBookedRooms } from './controllers/booking.controller';
 import passport from './middleware/passport';
 import router from './routes';
 import { sequelize } from './sequilizedir/models';
 import { whatsAppStatus, whatsAppVerification } from './services/whatsApp/whatsApp.service';
-import { PORT } from './config';
-import dns from 'dns';
-import 'reflect-metadata';
 dns.setDefaultResultOrder('ipv4first');
 
 const app: Express = express();

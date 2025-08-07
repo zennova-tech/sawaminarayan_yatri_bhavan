@@ -190,7 +190,9 @@ const releaseBookedRooms = async () => {
     let totalRoomsToRelease = 0;
     for (const booking of expiredBookings) {
       totalRoomsToRelease += booking.rooms_booked;
-      await booking.destroy();
+      if (booking.status === 'pending') {
+        await booking.update({ status: 'closed' });
+      }
     }
     console.log(
       `Released ${totalRoomsToRelease} rooms and removed ${expiredBookings.length} bookings`,
