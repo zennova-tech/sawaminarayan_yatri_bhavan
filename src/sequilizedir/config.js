@@ -14,5 +14,8 @@ module.exports = {
     acquire: 60000,
     idle: 10000,
   },
+  dialectOptions: {
+    useUTC: false, // for reading from database
+  },
   logger: false,
 };
