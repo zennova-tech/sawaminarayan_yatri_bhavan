@@ -18,7 +18,8 @@ import {
 import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
-import { eachDayOfInterval } from 'date-fns';
+import { eachDayOfInterval, startOfDay } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
@@ -260,8 +261,9 @@ const PriceRules = async (req: Request, res: Response) => {
 const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
-    const checkInDate = new Date(check_in as string);
-    const checkOutDate = new Date(check_out as string);
+    const timeZone = 'Asia/Kolkata';
+    const checkInDate = toZonedTime(new Date(check_in as string), timeZone);
+    const checkOutDate = toZonedTime(new Date(check_out as string), timeZone);
     const totalRooms = parseInt(total_rooms as string);
     const nights = eachDayOfInterval({
       start: checkInDate,
@@ -272,7 +274,9 @@ const calculatePrice = async (req: Request, res: Response) => {
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
     for (const date of nights) {
-      const priceRule = await findPriceRuleByDate(date);
+      const zonedDate = toZonedTime(date, timeZone);
+      const normalizedDate = startOfDay(zonedDate);
+      const priceRule = await findPriceRuleByDate(normalizedDate);
       let price = 0;
       if (priceRule) {
         price = priceRule.price_per_night * totalRooms;
