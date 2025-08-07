@@ -43,6 +43,7 @@ const fetchBookingsData = async (checkInDate?: string, status?: string) => {
       'amount_paid',
       'amount_due',
       'remarks',
+      'status',
     ],
     where: {
       ...(checkInDate ? { check_in: new Date(checkInDate) } : {}),
