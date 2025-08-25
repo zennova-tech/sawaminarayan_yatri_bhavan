@@ -18,7 +18,7 @@ import {
 import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
-import { eachDayOfInterval, startOfDay } from 'date-fns';
+import { eachDayOfInterval, parseISO, startOfDay } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { Request, Response } from 'express';
 
@@ -262,8 +262,8 @@ const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
     const timeZone = 'Asia/Kolkata';
-    const checkInDate = toZonedTime(new Date(check_in as string), timeZone);
-    const checkOutDate = toZonedTime(new Date(check_out as string), timeZone);
+    const checkInDate = toZonedTime(parseISO(check_in as string), timeZone);
+    const checkOutDate = toZonedTime(parseISO(check_out as string), timeZone);
     const totalRooms = parseInt(total_rooms as string);
     const nights = eachDayOfInterval({
       start: checkInDate,
