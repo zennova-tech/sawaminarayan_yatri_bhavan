@@ -13,5 +13,5 @@ module.exports = {
     acquire: 60000,
     idle: 10000,
   },
-  logger: false,
+  logger: true,
 };

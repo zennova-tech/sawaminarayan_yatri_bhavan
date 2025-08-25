@@ -276,7 +276,11 @@ const calculatePrice = async (req: Request, res: Response) => {
     for (const date of nights) {
       const istDate = toZonedTime(date, timeZone);
       const normalizedDate = startOfDay(istDate);
-      const priceRule = await findPriceRuleByDate(normalizedDate);
+      const normalizedUtc = new Date(
+        Date.UTC(normalizedDate.getFullYear(), normalizedDate.getMonth(), normalizedDate.getDate()),
+      );
+      const priceRule = await findPriceRuleByDate(normalizedUtc);
+
       let price = 0;
       if (priceRule) {
         price = priceRule.price_per_night * totalRooms;
@@ -285,7 +289,7 @@ const calculatePrice = async (req: Request, res: Response) => {
       }
       totalPrice += price;
       metadata.push({
-        date,
+        date: normalizedUtc.toISOString(),
         price,
       });
     }
