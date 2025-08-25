@@ -262,20 +262,22 @@ const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
     const timeZone = 'Asia/Kolkata';
-    const checkInDate = toZonedTime(parseISO(check_in as string), timeZone);
-    const checkOutDate = toZonedTime(parseISO(check_out as string), timeZone);
+    const checkInDate = parseISO(check_in as string);
+    const checkOutDate = parseISO(check_out as string);
     const totalRooms = parseInt(total_rooms as string);
+    const checkInIST = toZonedTime(checkInDate, timeZone);
+    const checkOutIST = toZonedTime(checkOutDate, timeZone);
     const nights = eachDayOfInterval({
-      start: checkInDate,
-      end: new Date(checkOutDate.getTime() - 1 * 24 * 60 * 60 * 1000),
+      start: startOfDay(checkInIST),
+      end: startOfDay(new Date(checkOutIST.getTime() - 1 * 24 * 60 * 60 * 1000)),
     });
 
     let totalPrice = 0;
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
     for (const date of nights) {
-      const zonedDate = toZonedTime(date, timeZone);
-      const normalizedDate = startOfDay(zonedDate);
+      const istDate = toZonedTime(date, timeZone);
+      const normalizedDate = startOfDay(istDate);
       const priceRule = await findPriceRuleByDate(normalizedDate);
       let price = 0;
       if (priceRule) {
