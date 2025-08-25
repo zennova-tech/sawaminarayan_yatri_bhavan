@@ -18,7 +18,7 @@ import {
 import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
-import { eachDayOfInterval, parseISO, startOfDay } from 'date-fns';
+import { eachDayOfInterval, parseISO, startOfDay, subDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { Request, Response } from 'express';
 
@@ -267,7 +267,7 @@ const calculatePrice = async (req: Request, res: Response) => {
     const totalRooms = parseInt(total_rooms as string);
     const nights = eachDayOfInterval({
       start: checkIn,
-      end: checkOut,
+      end: subDays(checkOut, 1),
     });
 
     let totalPrice = 0;
