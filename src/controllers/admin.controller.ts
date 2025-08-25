@@ -262,14 +262,12 @@ const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
     const timeZone = 'Asia/Kolkata';
-    const checkInDate = parseISO(check_in as string);
-    const checkOutDate = parseISO(check_out as string);
+    const checkIn = parseISO(check_in as string);
+    const checkOut = parseISO(check_out as string);
     const totalRooms = parseInt(total_rooms as string);
-    const checkInIST = toZonedTime(checkInDate, timeZone);
-    const checkOutIST = toZonedTime(checkOutDate, timeZone);
     const nights = eachDayOfInterval({
-      start: startOfDay(checkInIST),
-      end: startOfDay(new Date(checkOutIST.getTime() - 1 * 24 * 60 * 60 * 1000)),
+      start: checkIn,
+      end: checkOut,
     });
 
     let totalPrice = 0;
