@@ -269,17 +269,13 @@ const calculatePrice = async (req: Request, res: Response) => {
     const parsedCheckInIST = toZonedTime(parsedCheckInUTC, timeZone);
     const parsedCheckOutIST = toZonedTime(parsedCheckOutUTC, timeZone);
 
-    // Normalize to midnight IST to match your DB rules
-    const normalizedCheckInIST = new Date(parsedCheckInIST);
-    normalizedCheckInIST.setHours(0, 0, 0, 0);
-
-    const normalizedCheckOutIST = new Date(parsedCheckOutIST);
-    normalizedCheckOutIST.setHours(0, 0, 0, 0);
+    parsedCheckInIST.setHours(0, 0, 0, 0);
+    parsedCheckOutIST.setHours(0, 0, 0, 0);
 
     // Generate nights in IST
     const nights = eachDayOfInterval({
-      start: normalizedCheckInIST,
-      end: subDays(normalizedCheckOutIST, 1),
+      start: parsedCheckInIST,
+      end: subDays(parsedCheckOutIST, 1),
     });
 
     const totalRooms = parseInt(total_rooms as string);
@@ -288,7 +284,9 @@ const calculatePrice = async (req: Request, res: Response) => {
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
     for (const date of nights) {
-      const priceRule = await findPriceRuleByDate(date);
+      const nightUTC = toZonedTime(date, 'UTC');
+
+      const priceRule = await findPriceRuleByDate(nightUTC);
 
       let price = 0;
       if (priceRule) {
