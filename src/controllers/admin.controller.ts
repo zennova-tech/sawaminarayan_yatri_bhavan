@@ -18,8 +18,7 @@ import {
 import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
-import { eachDayOfInterval, parseISO, startOfDay, subDays } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { eachDayOfInterval, parseISO, subDays } from 'date-fns';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
@@ -261,25 +260,26 @@ const PriceRules = async (req: Request, res: Response) => {
 const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
-    const timeZone = 'Asia/Kolkata';
-    const checkIn = parseISO(check_in as string);
-    const checkOut = parseISO(check_out as string);
-    const totalRooms = parseInt(total_rooms as string);
+
+    // Parse ISO date strings
+    const parsedCheckIn = parseISO(check_in as string);
+    const parsedCheckOut = parseISO(check_out as string);
+
+    // Nights between check-in and check-out
     const nights = eachDayOfInterval({
-      start: checkIn,
-      end: subDays(checkOut, 1),
+      start: parsedCheckIn,
+      end: subDays(parsedCheckOut, 1),
     });
+
+    const totalRooms = parseInt(total_rooms as string);
+
+    // Calculate nights based on IST-normalized dates
 
     let totalPrice = 0;
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
     for (const date of nights) {
-      const istDate = toZonedTime(date, timeZone);
-      const normalizedDate = startOfDay(istDate);
-      const normalizedUtc = new Date(
-        Date.UTC(normalizedDate.getFullYear(), normalizedDate.getMonth(), normalizedDate.getDate()),
-      );
-      const priceRule = await findPriceRuleByDate(normalizedUtc);
+      const priceRule = await findPriceRuleByDate(date);
 
       let price = 0;
       if (priceRule) {
@@ -289,7 +289,7 @@ const calculatePrice = async (req: Request, res: Response) => {
       }
       totalPrice += price;
       metadata.push({
-        date: normalizedUtc.toISOString(),
+        date: date.toISOString(),
         price,
       });
     }
