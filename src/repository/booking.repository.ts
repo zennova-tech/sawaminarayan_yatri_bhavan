@@ -45,6 +45,7 @@ const fetchBookingsData = async (checkInDate?: string, status?: string) => {
       'remarks',
       'status',
     ],
+    order: [['created_at', 'DESC']],
     where: {
       ...(checkInDate ? { check_in: new Date(checkInDate) } : {}),
       ...(status ? { status } : {}),
