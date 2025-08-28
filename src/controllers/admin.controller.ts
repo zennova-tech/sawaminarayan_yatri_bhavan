@@ -19,7 +19,6 @@ import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { eachDayOfInterval, parseISO, subDays } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
@@ -261,21 +260,14 @@ const PriceRules = async (req: Request, res: Response) => {
 const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
-    const timeZone = 'Asia/Kolkata'; // Your business timezone
 
     const parsedCheckInUTC = parseISO(check_in as string);
     const parsedCheckOutUTC = parseISO(check_out as string);
 
-    const parsedCheckInIST = toZonedTime(parsedCheckInUTC, timeZone);
-    const parsedCheckOutIST = toZonedTime(parsedCheckOutUTC, timeZone);
-
-    parsedCheckInIST.setHours(0, 0, 0, 0);
-    parsedCheckOutIST.setHours(0, 0, 0, 0);
-
     // Generate nights in IST
     const nights = eachDayOfInterval({
-      start: parsedCheckInIST,
-      end: subDays(parsedCheckOutIST, 1),
+      start: parsedCheckInUTC,
+      end: subDays(parsedCheckOutUTC, 1),
     });
 
     const totalRooms = parseInt(total_rooms as string);
