@@ -19,6 +19,7 @@ import Booking from '@/sequilizedir/models/booking.model';
 import { IRoomPriceRules } from '@/sequilizedir/models/roomPriceRules.model';
 import { generalResponse } from '@/utils/generalResponse';
 import { eachDayOfInterval, parseISO, subDays } from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { Request, Response } from 'express';
 
 const AdminDashboard = async (req: Request, res: Response) => {
@@ -260,14 +261,17 @@ const PriceRules = async (req: Request, res: Response) => {
 const calculatePrice = async (req: Request, res: Response) => {
   try {
     const { check_in, check_out, total_rooms } = req.query;
-
+    const timeZone = 'Asia/Kolkata';
     const parsedCheckInUTC = parseISO(check_in as string);
     const parsedCheckOutUTC = parseISO(check_out as string);
-
+    const parsedCheckInIST = utcToZonedTime(parsedCheckInUTC, timeZone);
+    const parsedCheckOutIST = utcToZonedTime(parsedCheckOutUTC, timeZone);
+    parsedCheckInIST.setHours(0, 0, 0, 0);
+    parsedCheckOutIST.setHours(0, 0, 0, 0);
     // Generate nights in IST
     const nights = eachDayOfInterval({
-      start: parsedCheckInUTC,
-      end: subDays(parsedCheckOutUTC, 1),
+      start: parsedCheckInIST,
+      end: subDays(parsedCheckOutIST, 1),
     });
 
     const totalRooms = parseInt(total_rooms as string);
@@ -276,7 +280,9 @@ const calculatePrice = async (req: Request, res: Response) => {
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
     for (const date of nights) {
-      const priceRule = await findPriceRuleByDate(date);
+      const nightUTC = zonedTimeToUtc(date, timeZone);
+
+      const priceRule = await findPriceRuleByDate(nightUTC);
 
       let price = 0;
       if (priceRule) {
@@ -286,7 +292,8 @@ const calculatePrice = async (req: Request, res: Response) => {
       }
       totalPrice += price;
       metadata.push({
-        date: date.toISOString(),
+        istDate: date.toISOString(),
+        dbDate: nightUTC.toISOString(),
         price,
       });
     }
