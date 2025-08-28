@@ -284,9 +284,7 @@ const calculatePrice = async (req: Request, res: Response) => {
     const metadata = [];
     const defaultPriceRule = await fetchDefaultPriceRule();
     for (const date of nights) {
-      const nightUTC = toZonedTime(date, 'UTC');
-
-      const priceRule = await findPriceRuleByDate(nightUTC);
+      const priceRule = await findPriceRuleByDate(date);
 
       let price = 0;
       if (priceRule) {

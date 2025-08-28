@@ -13,5 +13,9 @@ module.exports = {
     acquire: 60000,
     idle: 10000,
   },
+  dialectOptions: {
+    useUTC: true,
+  },
+  timezone: '+00:00',
   logger: true,
 };
