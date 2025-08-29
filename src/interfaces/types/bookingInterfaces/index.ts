@@ -16,6 +16,7 @@ export type bookingPayload = {
   address1: string;
   address2: string;
   city: string;
+  updated_amount?: number;
   state: string;
   payment_status?: string;
   amount_paid?: number;

@@ -33,6 +33,7 @@ export interface IBooking {
   payment_status: string;
   amount_paid: number;
   amount_due: number;
+  updated_amount: number;
   remarks: string;
   created_by?: string;
   status?: string;
@@ -130,6 +131,10 @@ class Booking extends Model<IBooking, ICreateBookingAttributes> {
   @AllowNull(true)
   @Column(DataType.DECIMAL(10, 2))
   amount_paid: number;
+
+  @AllowNull(true)
+  @Column(DataType.DECIMAL(10, 2))
+  updated_amount: number;
 
   @AllowNull(true)
   @Column(DataType.DECIMAL(10, 2))

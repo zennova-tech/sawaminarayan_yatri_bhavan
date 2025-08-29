@@ -113,6 +113,7 @@ const razorpayWebhook = async (req: Request, res: Response) => {
           amount_paid: notes.amount,
           amount_due: 0,
           remarks: notes.remarks,
+          updated_amount: notes?.updated_amount,
         };
 
         await BookingRooms(bookingNotes, req.transaction, payment.id, payment.method);

@@ -44,6 +44,7 @@ const fetchBookingsData = async (checkInDate?: string, status?: string) => {
       'amount_due',
       'remarks',
       'status',
+      'updated_amount',
     ],
     order: [['created_at', 'DESC']],
     where: {
@@ -80,6 +81,7 @@ const BookingRooms = async (
     amount_paid: data.amount_paid,
     amount_due: data.amount_due,
     remarks: data.remarks,
+    updated_amount: data?.updated_amount,
   };
   const hotelSettings = await HotelSettings.findOne({ transaction });
   if ((hotelSettings.available_rooms || 0) - data.rooms < 0) {

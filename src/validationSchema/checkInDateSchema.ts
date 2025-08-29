@@ -33,6 +33,7 @@ export const bookingSchema = Joi.object({
   agree: Joi.boolean().optional(),
   amount_paid: Joi.number().optional(),
   amount_due: Joi.number().optional(),
+  updated_amount: Joi.number().optional(),
   payment_status: Joi.string().optional(),
   remarks: Joi.string().optional().allow(''),
 });

@@ -65,6 +65,7 @@ const createBooking = async (req: Request, res: Response) => {
       amount_paid,
       amount_due,
       remarks,
+      updated_amount,
     } = req.body;
     const notes: bookingPayload = {
       check_in,
@@ -85,6 +86,7 @@ const createBooking = async (req: Request, res: Response) => {
       amount_paid,
       amount_due,
       remarks,
+      updated_amount,
     };
     const bookingData = await BookingRooms(notes, req.transaction);
     return generalResponse(req, res, bookingData, 'Booking created successfully', false);
@@ -110,6 +112,7 @@ const updateBooking = async (req: Request, res: Response) => {
       address2,
       city,
       state,
+      updated_amount,
     } = req.body;
     const notes: bookingPayload = {
       id: req.params.id,
@@ -127,6 +130,7 @@ const updateBooking = async (req: Request, res: Response) => {
       address2,
       city,
       state,
+      updated_amount,
     };
     const bookingData = await BookingRooms(notes, req.transaction);
     return generalResponse(req, res, bookingData, 'Booking created successfully', false);
