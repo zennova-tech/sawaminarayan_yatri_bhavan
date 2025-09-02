@@ -57,10 +57,12 @@ export const sendMail = async (
     }
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.hostinger.com',
+      port: 465,
+      secure: true,
       auth: {
-        user: MAIL_USER, // Your Gmail address
-        pass: MAIL_PASS, // App Password
+        user: MAIL_USER,
+        pass: MAIL_PASS,
       },
     });
 

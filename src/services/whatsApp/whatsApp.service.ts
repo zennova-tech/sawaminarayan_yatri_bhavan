@@ -71,7 +71,7 @@ export const sendWhatsAppMessage = async (phone_number: number, data) => {
                 type: 'text',
                 text: (data.rooms * data.total_guests).toString(),
               },
-              { type: 'text', text: data.mattress.toString() },
+              { type: 'text', text: data.mattress === null ? '0' : data.mattress.toString() },
               { type: 'text', text: data.amount.toString() },
               { type: 'text', text: '+91 63537 32585' },
               { type: 'text', text: '+91 72010 60500' },
