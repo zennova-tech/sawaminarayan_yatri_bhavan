@@ -1,6 +1,10 @@
 import { MAIL_CLIENT, RAZORPAY_WEBHOOK_SECRET } from '@/config';
 import { bookingPayload } from '@/interfaces/types/bookingInterfaces';
-import { BookingRooms, hotelDetails } from '@/repository/booking.repository';
+import {
+  BookingRooms,
+  checkIfPaymentProcessed,
+  hotelDetails,
+} from '@/repository/booking.repository';
 import Booking from '@/sequilizedir/models/booking.model';
 import { sendMail } from '@/services/mail/mail.service';
 import razorpayInstance from '@/services/razorpay/razorpay.service';
@@ -92,6 +96,13 @@ const razorpayWebhook = async (req: Request, res: Response) => {
     if (event === 'payment.captured') {
       const payment = payload.payment.entity;
       const notes = payment.notes || {};
+      const paymentId = payment.id;
+
+      const existingBooking = await checkIfPaymentProcessed(paymentId); // You need to implement this
+      if (existingBooking) {
+        console.log(`Payment ${paymentId} already processed, skipping...`);
+        return generalResponse(req, res, { paymentId }, 'Payment already processed', true);
+      }
 
       try {
         const bookingNotes: bookingPayload = {

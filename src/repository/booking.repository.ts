@@ -129,9 +129,14 @@ const cancelBookingData = async (id: string) => {
   return await Booking.update({ status: 'cancelled' }, { where: { id } });
 };
 
+const checkIfPaymentProcessed = async (id: string) => {
+  return await Booking.findOne({ where: { payment_id: id } });
+};
+
 export {
   BookingRooms,
   cancelBookingData,
+  checkIfPaymentProcessed,
   deleteBookingData,
   fetchBookingsData,
   getAvailableRooms,
